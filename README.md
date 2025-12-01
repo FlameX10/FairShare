@@ -18,11 +18,11 @@ UPI Integration – Generate UPI payment request links for quick settlements.
 Clean & Modern UI – Simple, intuitive, and easy to use.
 
 🛠️ Tech Stack
-Frontend: React.js / Next.js (your choice)
-Backend: Node.js + Express or Django
-Database: MongoDB / PostgreSQL
-Auth: JWT / Firebase Authentication
-PDF Generation: PDFKit / Puppeteer
+Frontend: React.js  
+Backend: Node.js + Express 
+Database: MongoDB 
+Auth: JWT 
+PDF Generation: PDFKit 
 Payment: UPI Intent API
 
 📂 Project Structure (Example)

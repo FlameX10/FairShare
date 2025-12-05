@@ -44,24 +44,6 @@ const Friends = () => {
     }
   };
 
-  const handleDeleteExpense = async (expenseId) => {
-    if (!window.confirm("Are you sure you want to delete this expense?")) {
-      return;
-    }
-
-    setDeletingId(expenseId);
-    try {
-      await deleteExpense(expenseId);
-      setFriendExpenses(friendExpenses.filter((exp) => exp._id !== expenseId));
-      setToast("Expense deleted successfully!");
-    } catch (error) {
-      console.error("Error deleting expense:", error);
-      setToast("Error: " + (error.response?.data?.message || "Failed to delete expense"));
-    } finally {
-      setDeletingId(null);
-    }
-  };
-
   const calculateBalance = (expenses) => {
     let lent = 0;
     let borrowed = 0;
@@ -91,9 +73,26 @@ const Friends = () => {
     }
   };
 
+  const handleDeleteExpense = async (expenseId) => {
+    if (!window.confirm("Delete this expense?")) {
+      return;
+    }
+
+    setDeletingId(expenseId);
+    try {
+      await deleteExpense(expenseId);
+      setFriendExpenses(friendExpenses.filter((exp) => exp._id !== expenseId));
+      setToast("Expense deleted");
+    } catch (error) {
+      setToast("Error deleting expense");
+    } finally {
+      setDeletingId(null);
+    }
+  };
+
   const handleGenerateReport = async () => {
     if (!selectedFriend || friendExpenses.length === 0) {
-      setToast("No expenses to generate report for this friend");
+      setToast("No expenses to generate report");
       return;
     }
 
@@ -116,18 +115,11 @@ const Friends = () => {
 
       if (window.html2pdf) {
         window.html2pdf().set(opt).from(element).save();
-        setToast("Report downloaded successfully!");
+        setToast("Report downloaded!");
         document.body.removeChild(element);
-      } else {
-        const printWindow = window.open('', '', 'width=900,height=600');
-        printWindow.document.write(html);
-        printWindow.document.close();
-        printWindow.print();
-        setToast("Report opened in print dialog!");
       }
     } catch (error) {
-      console.error("Error generating report:", error);
-      setToast("Error: " + (error.message || "Failed to generate report"));
+      setToast("Error generating report");
     } finally {
       setGeneratingReport(false);
     }
@@ -144,96 +136,97 @@ const Friends = () => {
       
       <div className="max-w-6xl mx-auto">
         <div className="flex justify-between items-center mb-8">
-          <h1 className="text-3xl font-bold text-gray-800">Friends</h1>
+          <div>
+            <h1 className="text-3xl font-semibold text-gray-900">Friends</h1>
+            <p className="text-gray-600 mt-1">Manage your friend relationships and expenses</p>
+          </div>
           <Link to="/friends/add">
-            <Button className="flex items-center gap-2">
+            <button className="bg-blue-600 hover:bg-blue-700 text-white font-medium py-2.5 px-4 rounded-lg flex items-center gap-2">
               <Plus size={20} /> Add Friend
-            </Button>
+            </button>
           </Link>
         </div>
 
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
           {/* Friends List */}
-          <div className="lg:col-span-1">
-            <Card className="h-fit">
-              <h2 className="text-xl font-bold text-gray-800 mb-4">Your Friends</h2>
-              <div className="space-y-3">
-                {friends.length > 0 ? (
-                  friends.map((friend) => (
-                    <button
-                      key={friend._id}
-                      onClick={() => handleSelectFriend(friend)}
-                      className={`w-full text-left px-4 py-3 rounded-lg transition-all ${
-                        selectedFriend?._id === friend._id
-                          ? "bg-blue-600 text-white shadow-md"
-                          : "bg-gray-100 text-gray-800 hover:bg-gray-200"
-                      }`}
-                    >
-                      <p className="font-semibold">{friend.name}</p>
-                      <p className="text-xs opacity-75">{friend.upiId}</p>
-                    </button>
-                  ))
-                ) : (
-                  <p className="text-gray-500 text-center py-8">No friends added yet</p>
-                )}
-              </div>
-            </Card>
+          <div className="bg-white border border-gray-200 rounded-lg p-6 shadow-sm h-fit">
+            <h2 className="text-lg font-semibold text-gray-900 mb-4">Your Friends</h2>
+            <div className="space-y-2">
+              {friends.length > 0 ? (
+                friends.map((friend) => (
+                  <button
+                    key={friend._id}
+                    onClick={() => handleSelectFriend(friend)}
+                    className={`w-full text-left px-4 py-3 rounded-lg transition-colors ${
+                      selectedFriend?._id === friend._id
+                        ? "bg-blue-600 text-white"
+                        : "bg-gray-50 text-gray-900 hover:bg-gray-100"
+                    }`}
+                  >
+                    <p className="font-medium">{friend.name}</p>
+                    <p className={`text-xs ${selectedFriend?._id === friend._id ? "text-blue-100" : "text-gray-600"}`}>
+                      {friend.upiId || "No UPI"}
+                    </p>
+                  </button>
+                ))
+              ) : (
+                <p className="text-center text-gray-500 py-8">No friends yet</p>
+              )}
+            </div>
           </div>
 
           {/* Friend Details & Expenses */}
-          <div className="lg:col-span-2">
+          <div className="lg:col-span-2 space-y-6">
             {selectedFriend ? (
-              <div className="space-y-6">
-                {/* Friend Info Card */}
-                <Card className="bg-gradient-to-br from-blue-50 to-indigo-50">
+              <>
+                {/* Friend Info */}
+                <div className="bg-white border border-gray-200 rounded-lg p-6 shadow-sm">
                   <div className="flex justify-between items-start mb-4">
                     <div>
-                      <h2 className="text-2xl font-bold text-gray-800 mb-2">{selectedFriend.name}</h2>
-                      <p className="text-gray-600">UPI: <span className="font-semibold">{selectedFriend.upiId}</span></p>
+                      <h2 className="text-2xl font-semibold text-gray-900">{selectedFriend.name}</h2>
+                      <p className="text-gray-600 text-sm mt-1">UPI: {selectedFriend.upiId || "Not added"}</p>
                     </div>
                     <Link to={`/expenses/add?friendId=${selectedFriend._id}`}>
-                      <Button className="flex items-center gap-2">
-                        <Plus size={20} /> Add Expense
-                      </Button>
+                      <button className="bg-blue-600 hover:bg-blue-700 text-white font-medium py-2 px-4 rounded-lg flex items-center gap-2 text-sm">
+                        <Plus size={16} /> Add Expense
+                      </button>
                     </Link>
                   </div>
-
                   <div className="border-t pt-4 mt-4">
-                    <p className={`text-lg font-bold ${balanceInfo.color}`}>
+                    <p className={`text-lg font-semibold ${balanceInfo.color}`}>
                       {balanceInfo.text}
                     </p>
                   </div>
-                </Card>
+                </div>
 
-                {/* Friend Expenses */}
-                <Card>
+                {/* Transactions */}
+                <div className="bg-white border border-gray-200 rounded-lg p-6 shadow-sm">
                   <div className="flex justify-between items-center mb-4">
-                    <h3 className="text-xl font-bold text-gray-800">Transactions with {selectedFriend.name}</h3>
+                    <h3 className="text-lg font-semibold text-gray-900">Transactions</h3>
                     <button
                       onClick={handleGenerateReport}
                       disabled={generatingReport || friendExpenses.length === 0}
-                      className="px-4 py-2 bg-orange-600 hover:bg-orange-700 text-white rounded-lg font-semibold text-sm disabled:opacity-50 disabled:cursor-not-allowed transition-all flex items-center gap-2"
+                      className="bg-orange-600 hover:bg-orange-700 text-white font-medium py-2 px-4 rounded-lg flex items-center gap-2 text-sm disabled:opacity-50"
                     >
                       {generatingReport ? (
                         <>
                           <Loader size={16} className="animate-spin" />
-                          Generating...
                         </>
                       ) : (
                         <>
-                          <FileText size={16} /> Generate Report
+                          <FileText size={16} /> Report
                         </>
                       )}
                     </button>
                   </div>
                   
                   {friendExpenses.length > 0 ? (
-                    <div className="space-y-3">
+                    <div className="space-y-2">
                       {friendExpenses.map((expense) => (
-                        <div key={expense._id} className="flex justify-between items-center p-4 bg-gray-50 rounded-lg border border-gray-200 group hover:shadow-md transition-all">
+                        <div key={expense._id} className="flex items-center justify-between p-4 bg-gray-50 rounded-lg border border-gray-100 group hover:border-gray-200">
                           <div className="flex-1">
-                            <div className="flex items-center gap-3 mb-2">
-                              <span className={`px-3 py-1 rounded-full text-xs font-semibold ${
+                            <div className="flex items-center gap-2 mb-1">
+                              <span className={`inline-block px-2 py-0.5 rounded text-xs font-medium ${
                                 expense.type === "lend" 
                                   ? "bg-green-100 text-green-700" 
                                   : "bg-red-100 text-red-700"
@@ -241,21 +234,19 @@ const Friends = () => {
                                 {expense.type === "lend" ? "Lent" : "Borrowed"}
                               </span>
                             </div>
-                            <p className="font-semibold text-gray-800">{expense.description}</p>
-                            <p className="text-sm text-gray-500">{new Date(expense.datetime).toLocaleDateString()}</p>
+                            <p className="font-medium text-gray-900 text-sm">{expense.description}</p>
+                            <p className="text-xs text-gray-500">{new Date(expense.datetime).toLocaleDateString()}</p>
                           </div>
                           <div className="flex items-center gap-3">
-                            <div className="text-right">
-                              <p className={`text-lg font-bold ${
-                                expense.type === "lend" ? "text-green-600" : "text-red-600"
-                              }`}>
-                                ₹{expense.amount}
-                              </p>
-                            </div>
+                            <p className={`font-semibold text-sm ${
+                              expense.type === "lend" ? "text-green-600" : "text-red-600"
+                            }`}>
+                              ₹{expense.amount}
+                            </p>
                             <button
                               onClick={() => handleDeleteExpense(expense._id)}
                               disabled={deletingId === expense._id}
-                              className="px-3 py-2 bg-red-500 hover:bg-red-600 text-white rounded-lg text-sm font-semibold disabled:opacity-50 disabled:cursor-not-allowed transition-all opacity-0 group-hover:opacity-100"
+                              className="p-2 hover:bg-red-50 text-red-600 rounded opacity-0 group-hover:opacity-100 transition-opacity"
                             >
                               {deletingId === expense._id ? (
                                 <Loader size={16} className="animate-spin" />
@@ -268,14 +259,14 @@ const Friends = () => {
                       ))}
                     </div>
                   ) : (
-                    <p className="text-gray-500 text-center py-8">No transactions yet. Add one to get started!</p>
+                    <p className="text-center text-gray-500 py-8 text-sm">No transactions yet</p>
                   )}
-                </Card>
-              </div>
+                </div>
+              </>
             ) : (
-              <Card className="flex items-center justify-center h-96">
-                <p className="text-gray-500 text-center">Select a friend to view details</p>
-              </Card>
+              <div className="bg-white border border-gray-200 rounded-lg p-12 shadow-sm flex items-center justify-center">
+                <p className="text-gray-500">Select a friend to view details</p>
+              </div>
             )}
           </div>
         </div>

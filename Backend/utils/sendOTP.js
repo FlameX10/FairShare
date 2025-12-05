@@ -2,6 +2,11 @@ import nodemailer from "nodemailer";
 
 export const sendOTP = async (email, otp) => {
   try {
+    if (!email || !otp) {
+      console.error("EMAIL ERROR: Email or OTP is missing");
+      return false;
+    }
+
     console.log("Sending OTP to:", email);
     
     const transporter = nodemailer.createTransport({
@@ -24,7 +29,7 @@ export const sendOTP = async (email, otp) => {
     };
 
     await transporter.sendMail(mailOptions);
-    console.log("OTP sent successfully");
+    console.log("OTP sent successfully to:", email);
     return true;
   } catch (error) {
     console.error("EMAIL ERROR:", error.message);

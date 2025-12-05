@@ -8,6 +8,8 @@ export const register = async (req, res) => {
   try {
     const { name, email, password } = req.body;
 
+    console.log("Register request received with email:", email);
+
     // 0️⃣ Validate inputs
     if (!name || !email || !password) {
       return res.status(400).json({
@@ -67,7 +69,10 @@ export const register = async (req, res) => {
     console.log("OTP created for user:", user._id);
 
     // 5️⃣ Send OTP
+    console.log("About to send OTP to email:", email);
     const emailSent = await sendOTP(email, otp);
+    console.log("Email sent result:", emailSent, "for email:", email);
+
     if (!emailSent) {
       console.error("Failed to send email to:", email);
       return res.status(500).json({
@@ -97,7 +102,7 @@ export const verifyOTP = async (req, res) => {
 
     // Find user
     const user = await User.findOne({ email });
-    if (!user) return res.status(400).json({ message: "User not found" });
+    if (!user) return res.status(400).json({ success: false, message: "User not found" });
 
     // Validate OTP
     const dbOtp = await OTP.findOne({
@@ -106,7 +111,7 @@ export const verifyOTP = async (req, res) => {
       purpose: "first_login",
     });
 
-    if (!dbOtp) return res.status(400).json({ message: "Invalid OTP" });
+    if (!dbOtp) return res.status(400).json({ success: false, message: "Invalid OTP" });
 
     // Mark user verified
     user.isEmailVerified = true;
@@ -118,9 +123,17 @@ export const verifyOTP = async (req, res) => {
     // Generate token
     const token = jwt.sign({ id: user._id }, process.env.JWT_SECRET);
 
-    res.json({ token });
+    res.json({
+      success: true,
+      token,
+      user: {
+        id: user._id,
+        name: user.name,
+        email: user.email,
+      },
+    });
   } catch (err) {
-    res.status(500).json({ error: err.message });
+    res.status(500).json({ success: false, error: err.message });
   }
 };
 

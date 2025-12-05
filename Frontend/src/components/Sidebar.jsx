@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { Link, useLocation } from "react-router-dom";
-import { Menu, X, LogOut, BarChart3, TrendingDown, Users, Send } from "lucide-react";
+import { Menu, LogOut, BarChart3, Users, Send } from "lucide-react";
 import useAuth from "../hooks/useAuth";
 
 const Sidebar = () => {
@@ -10,7 +10,6 @@ const Sidebar = () => {
 
   const menuItems = [
     { icon: BarChart3, label: "Dashboard", path: "/dashboard" },
-    { icon: TrendingDown, label: "Track Expense", path: "/expenses" },
     { icon: Users, label: "Friends", path: "/friends" },
     { icon: Send, label: "UPI Requests", path: "/upi" },
   ];

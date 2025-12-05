@@ -12,7 +12,7 @@ const Register = () => {
   const [showPassword, setShowPassword] = useState(false);
   const [loading, setLoading] = useState(false);
 
-  const API_URL = import.meta.env.VITE_API_URL || "http://localhost:5000";
+  const API_URL = import.meta.env.VITE_API_URL;
 
   const handleChange = (e) => {
     setFormData({ ...formData, [e.target.name]: e.target.value });
@@ -37,43 +37,39 @@ const Register = () => {
     }
 
     try {
-      console.log("API URL:", API_URL);
-      console.log("Sending registration request...", formData);
+      console.log("[REGISTER] API_URL:", API_URL);
+      console.log("[REGISTER] Sending request...");
       
       const response = await axios.post(
         `${API_URL}/api/auth/register`,
         formData,
-        { timeout: 30000 } // Increased to 30 seconds
+        { timeout: 60000 }
       );
 
-      console.log("Registration response:", response.data);
+      console.log("[REGISTER] Success:", response.data);
 
       if (response.data.success) {
         localStorage.setItem("pendingEmail", formData.email);
-        setToast("OTP sent to your email!");
+        setToast("✅ Check your email for OTP!");
         setLoading(false);
-        setTimeout(() => navigate("/verify-otp", { state: { email: formData.email } }), 1500);
-      } else {
-        setError(response.data.error || "Registration failed");
-        setLoading(false);
+        setTimeout(() => navigate("/verify-otp", { state: { email: formData.email } }), 2000);
       }
     } catch (err) {
-      console.error("Registration error:", err);
-      if (err.code === "ECONNABORTED") {
-        setError("Request timeout - Backend not responding. Check if server is running.");
-      } else if (!err.response) {
-        setError(`Cannot reach backend at ${API_URL}`);
-      } else {
-        setError(err.response?.data?.error || err.message || "Registration failed");
-      }
-      setToast("Error: " + (err.message || "Registration failed"));
+      console.error("[REGISTER] Error:", err.message);
       setLoading(false);
+      
+      if (!err.response) {
+        setError("Backend unreachable. Check your internet connection.");
+      } else {
+        setError(err.response?.data?.error || "Registration failed");
+      }
+      setToast("❌ " + (err.response?.data?.error || "Error"));
     }
   };
 
   return (
     <div className="min-h-screen bg-white flex items-center justify-center px-4">
-      {toast && <Toast message={toast} type={toast.includes("Error") ? "error" : "success"} />}
+      {toast && <Toast message={toast} type={toast.includes("✅") ? "success" : "error"} />}
       
       <div className="w-full max-w-md">
         {/* Header */}

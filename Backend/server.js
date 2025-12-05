@@ -1,5 +1,6 @@
 import "./config/dotenv.js";
 import express from "express";
+import cors from "cors";
 import connectDB from "./config/db.js";
 
 import authRoutes from "./routes/authRoutes.js";
@@ -9,6 +10,15 @@ import upiRoutes from "./routes/upiRoutes.js";
 import pdfRoutes from "./routes/pdfRoutes.js";
 
 const app = express();
+
+// CORS middleware
+app.use(cors({
+  origin: "http://localhost:3000",
+  credentials: true,
+  methods: ["GET", "POST", "PUT", "DELETE", "PATCH"],
+  allowedHeaders: ["Content-Type", "Authorization"]
+}));
+
 app.use(express.json());
 
 connectDB();

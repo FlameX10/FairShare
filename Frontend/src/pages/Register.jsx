@@ -1,16 +1,18 @@
 import { useState } from "react";
 import { useNavigate, Link } from "react-router-dom";
+import axios from "axios";
 import { Mail, Lock, User, Eye, EyeOff } from "lucide-react";
-import useAuth from "../hooks/useAuth";
 import Toast from "../components/Toast";
 
 const Register = () => {
   const navigate = useNavigate();
-  const { register, loading } = useAuth();
   const [formData, setFormData] = useState({ name: "", email: "", password: "" });
   const [error, setError] = useState("");
   const [toast, setToast] = useState("");
   const [showPassword, setShowPassword] = useState(false);
+  const [loading, setLoading] = useState(false);
+
+  const API_URL = import.meta.env.VITE_API_URL || "http://localhost:5000";
 
   const handleChange = (e) => {
     setFormData({ ...formData, [e.target.name]: e.target.value });
@@ -20,24 +22,35 @@ const Register = () => {
   const handleSubmit = async (e) => {
     e.preventDefault();
     setError("");
+    setLoading(true);
 
     if (!formData.name || !formData.email || !formData.password) {
       setError("All fields are required");
+      setLoading(false);
       return;
     }
 
     if (formData.password.length < 6) {
       setError("Password must be at least 6 characters");
+      setLoading(false);
       return;
     }
 
     try {
-      await register(formData.name, formData.email, formData.password);
-      setToast("OTP sent to your email!");
-      setTimeout(() => navigate("/verify-otp"), 1500);
+      const response = await axios.post(
+        `${API_URL}/api/auth/register`,
+        formData
+      );
+
+      if (response.data.success) {
+        setToast("OTP sent to your email!");
+        setTimeout(() => navigate("/verify-otp"), 1500);
+      }
     } catch (err) {
-      setError(err.message || "Registration failed");
-      setToast("Error: " + (err.message || "Registration failed"));
+      setError(err.response?.data?.error || "Registration failed");
+      setToast("Error: " + (err.response?.data?.error || "Registration failed"));
+    } finally {
+      setLoading(false);
     }
   };
 

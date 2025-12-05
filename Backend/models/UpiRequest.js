@@ -5,7 +5,7 @@ const upiRequestSchema = new mongoose.Schema({
   toFriendId: { type: mongoose.Schema.Types.ObjectId, ref: "Friend" },
   amount: Number,
   note: String,
-  status: { type: String, default: "pending" },
+  status: { type: String, enum: ["Pending", "Completed"], default: "Pending" },
   createdAt: { type: Date, default: Date.now },
 });
 

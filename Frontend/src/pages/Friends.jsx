@@ -99,14 +99,35 @@ const Friends = () => {
     setGeneratingReport(true);
     try {
       const response = await generatePDF(friendExpenses);
-      const url = window.URL.createObjectURL(new Blob([response.data]));
-      const link = document.createElement("a");
-      link.href = url;
-      link.setAttribute("download", `${selectedFriend.name}-expenses.pdf`);
-      document.body.appendChild(link);
-      link.click();
-      link.parentElement.removeChild(link);
-      setToast("Report downloaded successfully!");
+      
+      // Create blob from HTML
+      const html = response.data.html;
+      const element = document.createElement("div");
+      element.innerHTML = html;
+      document.body.appendChild(element);
+
+      // Use html2pdf library
+      const opt = {
+        margin: 10,
+        filename: `${selectedFriend.name}-expenses.pdf`,
+        image: { type: 'jpeg', quality: 0.98 },
+        html2canvas: { scale: 2 },
+        jsPDF: { orientation: 'portrait', unit: 'mm', format: 'a4' }
+      };
+
+      // Check if html2pdf is available
+      if (window.html2pdf) {
+        window.html2pdf().set(opt).from(element).save();
+        setToast("Report downloaded successfully!");
+        document.body.removeChild(element);
+      } else {
+        // Fallback: open HTML in new window
+        const printWindow = window.open('', '', 'width=900,height=600');
+        printWindow.document.write(html);
+        printWindow.document.close();
+        printWindow.print();
+        setToast("Report opened in print dialog!");
+      }
     } catch (error) {
       console.error("Error generating report:", error);
       setToast("Error: " + (error.message || "Failed to generate report"));

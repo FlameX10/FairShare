@@ -14,4 +14,4 @@ API.interceptors.request.use((config) => {
 });
 
 export const generatePDF = (expenses) =>
-  API.post("/api/pdf/generate", { expenses }, { responseType: "blob" });
+  API.post("/api/pdf/generate", { expenses });

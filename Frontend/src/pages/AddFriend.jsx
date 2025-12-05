@@ -1,7 +1,6 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { addFriend } from "../api/friends";
-import Input from "../components/Input";
 import Button from "../components/Button";
 import Card from "../components/Card";
 import Toast from "../components/Toast";
@@ -20,8 +19,14 @@ const AddFriend = () => {
     e.preventDefault();
     setLoading(true);
 
+    if (!formData.name) {
+      setToast("Friend name is required");
+      setLoading(false);
+      return;
+    }
+
     try {
-      await addFriend(formData.name, formData.upiId);
+      await addFriend(formData.name, formData.upiId || null);
       setToast("Friend added successfully!");
       setTimeout(() => navigate("/friends"), 1500);
     } catch (error) {
@@ -32,31 +37,63 @@ const AddFriend = () => {
   };
 
   return (
-    <div className="min-h-screen bg-gray-50 p-6">
+    <div className="p-8 bg-gray-50 min-h-screen">
       {toast && <Toast message={toast} type={toast.includes("Error") ? "error" : "success"} />}
       <div className="max-w-md mx-auto">
         <Card>
-          <h1 className="text-2xl font-bold mb-6">Add Friend</h1>
-          <form onSubmit={handleSubmit}>
-            <Input
-              label="Friend Name"
-              placeholder="John Doe"
-              name="name"
-              value={formData.name}
-              onChange={handleChange}
-              required
-            />
-            <Input
-              label="UPI ID"
-              placeholder="john@upi"
-              name="upiId"
-              value={formData.upiId}
-              onChange={handleChange}
-              required
-            />
-            <Button type="submit" loading={loading} className="w-full">
-              Add Friend
-            </Button>
+          <h1 className="text-2xl font-bold mb-6 text-gray-800">Add Friend</h1>
+          <form onSubmit={handleSubmit} className="space-y-6">
+            <div>
+              <label className="block text-sm font-semibold text-gray-700 mb-3">
+                Friend Name <span className="text-red-500">*</span>
+              </label>
+              <input
+                type="text"
+                placeholder="John Doe"
+                name="name"
+                value={formData.name}
+                onChange={handleChange}
+                required
+                className="w-full px-4 py-3 border-2 border-gray-300 rounded-lg focus:outline-none focus:border-blue-500 focus:ring-2 focus:ring-blue-200 transition-all text-base"
+              />
+            </div>
+
+            <div>
+              <label className="block text-sm font-semibold text-gray-700 mb-3">
+                UPI ID <span className="text-gray-500 text-xs">(Optional)</span>
+              </label>
+              <input
+                type="text"
+                placeholder="john@upi"
+                name="upiId"
+                value={formData.upiId}
+                onChange={handleChange}
+                className="w-full px-4 py-3 border-2 border-gray-300 rounded-lg focus:outline-none focus:border-blue-500 focus:ring-2 focus:ring-blue-200 transition-all text-base"
+              />
+              <p className="text-xs text-gray-500 mt-2">You can add this later</p>
+            </div>
+
+            <button
+              type="submit"
+              disabled={loading}
+              className="w-full bg-gradient-to-r from-blue-600 to-purple-600 text-white font-semibold py-3 rounded-lg hover:shadow-lg hover:shadow-blue-500/50 transition-all duration-200 disabled:opacity-70 disabled:cursor-not-allowed flex items-center justify-center gap-2 text-lg"
+            >
+              {loading ? (
+                <>
+                  <svg className="w-6 h-6 animate-spin" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z" />
+                  </svg>
+                  Adding...
+                </>
+              ) : (
+                <>
+                  <span>Add Friend</span>
+                  <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4v16m8-8H4" />
+                  </svg>
+                </>
+              )}
+            </button>
           </form>
         </Card>
       </div>

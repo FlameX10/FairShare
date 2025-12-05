@@ -4,45 +4,62 @@ import bcrypt from "bcrypt";
 import jwt from "jsonwebtoken";
 import { sendOTP } from "../utils/sendOTP.js";
 import { generateToken } from "../utils/jwt.js";
-
 export const register = async (req, res) => {
   try {
     const { name, email, password } = req.body;
 
-    // Hash password
+    // 1️⃣ Check if email exists
+    const exists = await User.findOne({ email });
+    if (exists) {
+      return res.status(400).json({
+        success: false,
+        error: "Email already registered",
+      });
+    }
+
+    // 2️⃣ Hash password
     const hash = await bcrypt.hash(password, 10);
 
-    // Create user
+    // 3️⃣ Create user
     const user = await User.create({
       name,
       email,
       passwordHash: hash,
+      isEmailVerified: false,
     });
 
-    // Generate OTP
+    // 4️⃣ Create OTP
     const otp = Math.floor(100000 + Math.random() * 900000).toString();
 
-    // Save OTP in DB
     await OTP.create({
       userId: user._id,
       otp,
       purpose: "first_login",
-      expiresAt: new Date(Date.now() + 1000 * 60 * 10), // 10 minutes
+      expiresAt: new Date(Date.now() + 1000 * 60 * 10),
     });
 
-    // Send OTP email
+    // 5️⃣ Send OTP
     const emailSent = await sendOTP(email, otp);
-
     if (!emailSent) {
       return res.status(500).json({
-        error: "Failed to send OTP email. Please try again."
+        success: false,
+        error: "Failed to send OTP",
       });
     }
 
-    res.json({ message: "User registered, OTP sent to email" });
+    // 6️⃣ Final response
+    return res.status(200).json({
+      success: true,
+      message: "OTP sent successfully",
+      email,
+    });
 
   } catch (error) {
-    res.status(500).json({ error: error.message });
+    console.error("REGISTER ERROR:", error);
+    return res.status(500).json({
+      success: false,
+      error: error.message,
+    });
   }
 };
 

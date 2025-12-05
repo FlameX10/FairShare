@@ -8,9 +8,9 @@ export const register = async (req, res) => {
   try {
     const { name, email, password } = req.body;
 
-    console.log("Register request received with email:", email);
+    console.log("[AUTH] Register request:", { name, email });
 
-    // 0️⃣ Validate inputs
+    // Validate inputs
     if (!name || !email || !password) {
       return res.status(400).json({
         success: false,
@@ -25,7 +25,6 @@ export const register = async (req, res) => {
       });
     }
 
-    // Validate email format
     const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
     if (!emailRegex.test(email)) {
       return res.status(400).json({
@@ -34,7 +33,7 @@ export const register = async (req, res) => {
       });
     }
 
-    // 1️⃣ Check if email exists
+    // Check if email exists
     const exists = await User.findOne({ email: email.toLowerCase() });
     if (exists) {
       return res.status(400).json({
@@ -43,10 +42,10 @@ export const register = async (req, res) => {
       });
     }
 
-    // 2️⃣ Hash password
+    // Hash password
     const hash = await bcrypt.hash(password, 10);
 
-    // 3️⃣ Create user
+    // Create user
     const user = await User.create({
       name: name.trim(),
       email: email.toLowerCase().trim(),
@@ -54,42 +53,35 @@ export const register = async (req, res) => {
       isEmailVerified: false,
     });
 
-    console.log("User created:", user._id);
+    console.log("[AUTH] User created:", user._id);
 
-    // 4️⃣ Create OTP
+    // Generate OTP
     const otp = Math.floor(100000 + Math.random() * 900000).toString();
 
     await OTP.create({
       userId: user._id,
       otp,
       purpose: "first_login",
-      expiresAt: new Date(Date.now() + 1000 * 60 * 10),
+      expiresAt: new Date(Date.now() + 10 * 60 * 1000), // 10 minutes
     });
 
-    console.log("OTP created for user:", user._id);
+    console.log("[AUTH] OTP created for user:", user._id);
 
-    // 5️⃣ Send OTP
-    console.log("About to send OTP to email:", email);
+    // Send OTP
     const emailSent = await sendOTP(email, otp);
-    console.log("Email sent result:", emailSent, "for email:", email);
 
     if (!emailSent) {
-      console.error("Failed to send email to:", email);
-      return res.status(500).json({
-        success: false,
-        error: "Failed to send OTP email. Check email configuration.",
-      });
+      // Still return success - user can request OTP again
+      console.warn("[AUTH] OTP email failed but continuing...");
     }
 
-    // 6️⃣ Final response
     return res.status(201).json({
       success: true,
-      message: "OTP sent successfully to your email",
+      message: "Registration successful. Check your email for OTP.",
       email,
     });
   } catch (error) {
-    console.error("REGISTER ERROR:", error.message);
-    console.error("Full error:", error);
+    console.error("[AUTH ERROR]", error);
     return res.status(500).json({
       success: false,
       error: error.message || "Registration failed",
@@ -103,7 +95,8 @@ export const verifyOTP = async (req, res) => {
 
     // Find user
     const user = await User.findOne({ email });
-    if (!user) return res.status(400).json({ success: false, message: "User not found" });
+    if (!user)
+      return res.status(400).json({ success: false, message: "User not found" });
 
     // Validate OTP
     const dbOtp = await OTP.findOne({
@@ -112,7 +105,8 @@ export const verifyOTP = async (req, res) => {
       purpose: "first_login",
     });
 
-    if (!dbOtp) return res.status(400).json({ success: false, message: "Invalid OTP" });
+    if (!dbOtp)
+      return res.status(400).json({ success: false, message: "Invalid OTP" });
 
     // Mark user verified
     user.isEmailVerified = true;

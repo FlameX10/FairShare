@@ -1,7 +1,7 @@
 import { useState, useEffect } from "react";
 import { Link } from "react-router-dom";
 import { getFriends } from "../api/friends";
-import { getExpenses } from "../api/expenses";
+import { getExpenses, deleteExpense } from "../api/expenses";
 import { generatePDF } from "../api/pdf";
 import Button from "../components/Button";
 import Card from "../components/Card";
@@ -15,6 +15,7 @@ const Friends = () => {
   const [friendExpenses, setFriendExpenses] = useState([]);
   const [generatingReport, setGeneratingReport] = useState(false);
   const [toast, setToast] = useState("");
+  const [deletingId, setDeletingId] = useState(null);
 
   useEffect(() => {
     const fetchFriends = async () => {
@@ -39,6 +40,24 @@ const Friends = () => {
       setFriendExpenses(expenses);
     } catch (error) {
       console.error("Error fetching expenses:", error);
+    }
+  };
+
+  const handleDeleteExpense = async (expenseId) => {
+    if (!window.confirm("Are you sure you want to delete this expense?")) {
+      return;
+    }
+
+    setDeletingId(expenseId);
+    try {
+      await deleteExpense(expenseId);
+      setFriendExpenses(friendExpenses.filter((exp) => exp._id !== expenseId));
+      setToast("Expense deleted successfully!");
+    } catch (error) {
+      console.error("Error deleting expense:", error);
+      setToast("Error: " + (error.response?.data?.message || "Failed to delete expense"));
+    } finally {
+      setDeletingId(null);
     }
   };
 
@@ -195,7 +214,7 @@ const Friends = () => {
                   {friendExpenses.length > 0 ? (
                     <div className="space-y-3">
                       {friendExpenses.map((expense) => (
-                        <div key={expense._id} className="flex justify-between items-center p-4 bg-gray-50 rounded-lg border border-gray-200">
+                        <div key={expense._id} className="flex justify-between items-center p-4 bg-gray-50 rounded-lg border border-gray-200 group hover:shadow-md transition-all">
                           <div className="flex-1">
                             <div className="flex items-center gap-3 mb-2">
                               <span className={`px-3 py-1 rounded-full text-xs font-semibold ${
@@ -209,12 +228,21 @@ const Friends = () => {
                             <p className="font-semibold text-gray-800">{expense.description}</p>
                             <p className="text-sm text-gray-500">{new Date(expense.datetime).toLocaleDateString()}</p>
                           </div>
-                          <div className="text-right">
-                            <p className={`text-lg font-bold ${
-                              expense.type === "lend" ? "text-green-600" : "text-red-600"
-                            }`}>
-                              ₹{expense.amount}
-                            </p>
+                          <div className="flex items-center gap-3">
+                            <div className="text-right">
+                              <p className={`text-lg font-bold ${
+                                expense.type === "lend" ? "text-green-600" : "text-red-600"
+                              }`}>
+                                ₹{expense.amount}
+                              </p>
+                            </div>
+                            <button
+                              onClick={() => handleDeleteExpense(expense._id)}
+                              disabled={deletingId === expense._id}
+                              className="px-3 py-2 bg-red-500 hover:bg-red-600 text-white rounded-lg text-sm font-semibold disabled:opacity-50 disabled:cursor-not-allowed transition-all opacity-0 group-hover:opacity-100"
+                            >
+                              {deletingId === expense._id ? "Deleting..." : "Delete"}
+                            </button>
                           </div>
                         </div>
                       ))}

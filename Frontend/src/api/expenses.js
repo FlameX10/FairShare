@@ -13,7 +13,7 @@ API.interceptors.request.use((config) => {
   return config;
 });
 
-export const addExpense = (friendId, amount, description, type = "personal", datetime) =>
+export const addExpense = (friendId, amount, description, type = "lend", datetime) =>
   API.post("/api/expense/add", { 
     friendId, 
     amount, 
@@ -21,6 +21,9 @@ export const addExpense = (friendId, amount, description, type = "personal", dat
     type,
     datetime
   });
+
+export const deleteExpense = (expenseId) =>
+  API.delete(`/api/expense/${expenseId}`);
 
 export const getExpenses = () => API.get("/api/expense/list");
 

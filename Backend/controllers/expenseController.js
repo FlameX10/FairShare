@@ -29,6 +29,29 @@ export const addExpense = async (req, res) => {
   }
 };
 
+export const deleteExpense = async (req, res) => {
+  try {
+    const { expenseId } = req.params;
+
+    const expense = await Expense.findById(expenseId);
+
+    if (!expense) {
+      return res.status(404).json({ message: "Expense not found" });
+    }
+
+    // Check if user owns this expense
+    if (expense.ownerId.toString() !== req.user.id) {
+      return res.status(403).json({ message: "Not authorized to delete this expense" });
+    }
+
+    await Expense.findByIdAndDelete(expenseId);
+    res.json({ message: "Expense deleted successfully" });
+  } catch (error) {
+    console.error("Error deleting expense:", error);
+    res.status(500).json({ message: error.message });
+  }
+};
+
 export const getFriendExpenses = async (req, res) => {
   try {
     const { friendId } = req.params;

@@ -38,7 +38,7 @@ const VerifyOtp = () => {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-blue-600 via-blue-500 to-purple-600 flex items-center justify-center p-4">
+    <div className="min-h-screen bg-blue-400 flex items-center justify-center p-4">
       {toast && <Toast message={toast} type={toast.includes("Error") ? "error" : "success"} />}
       
       <div className="w-full max-w-md">

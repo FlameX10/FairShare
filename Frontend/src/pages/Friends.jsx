@@ -1,11 +1,12 @@
 import { useState, useEffect } from "react";
 import { Link } from "react-router-dom";
+import { Plus, FileText, Trash2, Loader } from "lucide-react";
 import { getFriends } from "../api/friends";
 import { getExpenses, deleteExpense } from "../api/expenses";
 import { generatePDF } from "../api/pdf";
 import Button from "../components/Button";
 import Card from "../components/Card";
-import Loader from "../components/Loader";
+import Loader2 from "../components/Loader";
 import Toast from "../components/Toast";
 
 const Friends = () => {
@@ -100,13 +101,11 @@ const Friends = () => {
     try {
       const response = await generatePDF(friendExpenses);
       
-      // Create blob from HTML
       const html = response.data.html;
       const element = document.createElement("div");
       element.innerHTML = html;
       document.body.appendChild(element);
 
-      // Use html2pdf library
       const opt = {
         margin: 10,
         filename: `${selectedFriend.name}-expenses.pdf`,
@@ -115,13 +114,11 @@ const Friends = () => {
         jsPDF: { orientation: 'portrait', unit: 'mm', format: 'a4' }
       };
 
-      // Check if html2pdf is available
       if (window.html2pdf) {
         window.html2pdf().set(opt).from(element).save();
         setToast("Report downloaded successfully!");
         document.body.removeChild(element);
       } else {
-        // Fallback: open HTML in new window
         const printWindow = window.open('', '', 'width=900,height=600');
         printWindow.document.write(html);
         printWindow.document.close();
@@ -136,7 +133,7 @@ const Friends = () => {
     }
   };
 
-  if (loading) return <Loader />;
+  if (loading) return <Loader2 />;
 
   const selectedBalance = selectedFriend ? calculateBalance(friendExpenses) : null;
   const balanceInfo = selectedBalance ? getBalanceText(selectedBalance.balance) : null;
@@ -149,7 +146,9 @@ const Friends = () => {
         <div className="flex justify-between items-center mb-8">
           <h1 className="text-3xl font-bold text-gray-800">Friends</h1>
           <Link to="/friends/add">
-            <Button>➕ Add Friend</Button>
+            <Button className="flex items-center gap-2">
+              <Plus size={20} /> Add Friend
+            </Button>
           </Link>
         </div>
 
@@ -190,17 +189,15 @@ const Friends = () => {
                   <div className="flex justify-between items-start mb-4">
                     <div>
                       <h2 className="text-2xl font-bold text-gray-800 mb-2">{selectedFriend.name}</h2>
-                      <p className="text-gray-600">
-                        UPI:{" "}
-                        <span className="font-semibold">{selectedFriend.upiId}</span>
-                      </p>
+                      <p className="text-gray-600">UPI: <span className="font-semibold">{selectedFriend.upiId}</span></p>
                     </div>
                     <Link to={`/expenses/add?friendId=${selectedFriend._id}`}>
-                      <Button>➕ Add Expense</Button>
+                      <Button className="flex items-center gap-2">
+                        <Plus size={20} /> Add Expense
+                      </Button>
                     </Link>
                   </div>
 
-                  {/* Balance Info */}
                   <div className="border-t pt-4 mt-4">
                     <p className={`text-lg font-bold ${balanceInfo.color}`}>
                       {balanceInfo.text}
@@ -219,14 +216,12 @@ const Friends = () => {
                     >
                       {generatingReport ? (
                         <>
-                          <svg className="w-4 h-4 animate-spin" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z" />
-                          </svg>
+                          <Loader size={16} className="animate-spin" />
                           Generating...
                         </>
                       ) : (
                         <>
-                          📄 Generate Report
+                          <FileText size={16} /> Generate Report
                         </>
                       )}
                     </button>
@@ -243,7 +238,7 @@ const Friends = () => {
                                   ? "bg-green-100 text-green-700" 
                                   : "bg-red-100 text-red-700"
                               }`}>
-                                {expense.type === "lend" ? "💰 You lent" : "💳 You borrowed"}
+                                {expense.type === "lend" ? "Lent" : "Borrowed"}
                               </span>
                             </div>
                             <p className="font-semibold text-gray-800">{expense.description}</p>
@@ -262,7 +257,11 @@ const Friends = () => {
                               disabled={deletingId === expense._id}
                               className="px-3 py-2 bg-red-500 hover:bg-red-600 text-white rounded-lg text-sm font-semibold disabled:opacity-50 disabled:cursor-not-allowed transition-all opacity-0 group-hover:opacity-100"
                             >
-                              {deletingId === expense._id ? "Deleting..." : "Delete"}
+                              {deletingId === expense._id ? (
+                                <Loader size={16} className="animate-spin" />
+                              ) : (
+                                <Trash2 size={16} />
+                              )}
                             </button>
                           </div>
                         </div>

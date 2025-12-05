@@ -1,10 +1,10 @@
 import { useState, useEffect } from "react";
 import { Link } from "react-router-dom";
+import { TrendingUp, TrendingDown, BarChart3, Clock, Users } from "lucide-react";
 import { getExpenses, getExpenseSummary } from "../api/expenses";
 import { getUpiRequests } from "../api/upi";
 import { getFriends } from "../api/friends";
 import Card from "../components/Card";
-import ExpenseCard from "../components/ExpenseCard";
 import Loader from "../components/Loader";
 
 const Dashboard = () => {
@@ -61,19 +61,25 @@ const Dashboard = () => {
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-4 mb-8">
         {/* Total Lent */}
         <Card className="bg-gradient-to-br from-green-500 to-green-600 text-white">
-          <div>
-            <p className="text-green-100 text-sm font-medium">Total Lent</p>
-            <p className="text-3xl font-bold mt-2">₹{stats.totalLent}</p>
-            <p className="text-green-200 text-xs mt-2">Money you gave</p>
+          <div className="flex items-start justify-between">
+            <div>
+              <p className="text-green-100 text-sm font-medium">Total Lent</p>
+              <p className="text-3xl font-bold mt-2">₹{stats.totalLent}</p>
+              <p className="text-green-200 text-xs mt-2">Money you gave</p>
+            </div>
+            <TrendingUp size={32} className="opacity-20" />
           </div>
         </Card>
 
         {/* Total Borrowed */}
         <Card className="bg-gradient-to-br from-red-500 to-red-600 text-white">
-          <div>
-            <p className="text-red-100 text-sm font-medium">Total Borrowed</p>
-            <p className="text-3xl font-bold mt-2">₹{stats.totalBorrowed}</p>
-            <p className="text-red-200 text-xs mt-2">Money you owe</p>
+          <div className="flex items-start justify-between">
+            <div>
+              <p className="text-red-100 text-sm font-medium">Total Borrowed</p>
+              <p className="text-3xl font-bold mt-2">₹{stats.totalBorrowed}</p>
+              <p className="text-red-200 text-xs mt-2">Money you owe</p>
+            </div>
+            <TrendingDown size={32} className="opacity-20" />
           </div>
         </Card>
 
@@ -83,30 +89,39 @@ const Dashboard = () => {
             ? "from-blue-500 to-blue-600" 
             : "from-orange-500 to-orange-600"
         } text-white`}>
-          <div>
-            <p className="text-blue-100 text-sm font-medium">Net Balance</p>
-            <p className="text-3xl font-bold mt-2">₹{Math.abs(stats.netBalance)}</p>
-            <p className="text-blue-200 text-xs mt-2">
-              {stats.netBalance > 0 ? "Others owe you" : stats.netBalance < 0 ? "You owe others" : "Settled"}
-            </p>
+          <div className="flex items-start justify-between">
+            <div>
+              <p className="text-blue-100 text-sm font-medium">Net Balance</p>
+              <p className="text-3xl font-bold mt-2">₹{Math.abs(stats.netBalance)}</p>
+              <p className="text-blue-200 text-xs mt-2">
+                {stats.netBalance > 0 ? "Others owe you" : stats.netBalance < 0 ? "You owe others" : "Settled"}
+              </p>
+            </div>
+            <BarChart3 size={32} className="opacity-20" />
           </div>
         </Card>
 
         {/* Pending UPI */}
         <Card className="bg-gradient-to-br from-yellow-500 to-yellow-600 text-white">
-          <div>
-            <p className="text-yellow-100 text-sm font-medium">Pending UPI</p>
-            <p className="text-3xl font-bold mt-2">{stats.pendingUpi}</p>
-            <p className="text-yellow-200 text-xs mt-2">Requests</p>
+          <div className="flex items-start justify-between">
+            <div>
+              <p className="text-yellow-100 text-sm font-medium">Pending UPI</p>
+              <p className="text-3xl font-bold mt-2">{stats.pendingUpi}</p>
+              <p className="text-yellow-200 text-xs mt-2">Requests</p>
+            </div>
+            <Clock size={32} className="opacity-20" />
           </div>
         </Card>
 
         {/* Friends */}
         <Card className="bg-gradient-to-br from-purple-500 to-purple-600 text-white">
-          <div>
-            <p className="text-purple-100 text-sm font-medium">Friends</p>
-            <p className="text-3xl font-bold mt-2">{stats.friendsCount}</p>
-            <p className="text-purple-200 text-xs mt-2">Total</p>
+          <div className="flex items-start justify-between">
+            <div>
+              <p className="text-purple-100 text-sm font-medium">Friends</p>
+              <p className="text-3xl font-bold mt-2">{stats.friendsCount}</p>
+              <p className="text-purple-200 text-xs mt-2">Total</p>
+            </div>
+            <Users size={32} className="opacity-20" />
           </div>
         </Card>
       </div>
@@ -133,7 +148,7 @@ const Dashboard = () => {
                           ? "bg-green-100 text-green-700" 
                           : "bg-red-100 text-red-700"
                       }`}>
-                        {exp.type === "lend" ? "💰 Lent" : "💳 Borrowed"}
+                        {exp.type === "lend" ? "Lent" : "Borrowed"}
                       </span>
                     </div>
                     <p className="font-semibold text-gray-800">{exp.description}</p>

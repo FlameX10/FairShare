@@ -1,5 +1,6 @@
 import { useState } from "react";
 import { Link, useLocation } from "react-router-dom";
+import { Menu, X, LogOut, BarChart3, TrendingDown, Users, Send } from "lucide-react";
 import useAuth from "../hooks/useAuth";
 
 const Sidebar = () => {
@@ -8,10 +9,10 @@ const Sidebar = () => {
   const { user, logout } = useAuth();
 
   const menuItems = [
-    { icon: "📊", label: "Dashboard", path: "/dashboard" },
-    { icon: "💸", label: "Track Expense", path: "/expenses" },
-    { icon: "👥", label: "Friends", path: "/friends" },
-    { icon: "💳", label: "UPI Requests", path: "/upi" },
+    { icon: BarChart3, label: "Dashboard", path: "/dashboard" },
+    { icon: TrendingDown, label: "Track Expense", path: "/expenses" },
+    { icon: Users, label: "Friends", path: "/friends" },
+    { icon: Send, label: "UPI Requests", path: "/upi" },
   ];
 
   const isActive = (path) => location.pathname === path;
@@ -31,26 +32,29 @@ const Sidebar = () => {
             onClick={() => setIsOpen(!isOpen)}
             className="p-2 hover:bg-blue-700 rounded-lg transition"
           >
-            {isOpen ? "☰" : "→"}
+            {isOpen ? <Menu size={24} /> : <Menu size={24} />}
           </button>
         </div>
 
         {/* Menu Items */}
         <nav className="flex-1 px-3 py-6 space-y-3">
-          {menuItems.map((item) => (
-            <Link
-              key={item.path}
-              to={item.path}
-              className={`flex items-center gap-4 px-4 py-3 rounded-lg transition-all ${
-                isActive(item.path)
-                  ? "bg-white/20 border-l-4 border-white"
-                  : "hover:bg-white/10"
-              }`}
-            >
-              <span className="text-2xl">{item.icon}</span>
-              {isOpen && <span className="font-medium">{item.label}</span>}
-            </Link>
-          ))}
+          {menuItems.map((item) => {
+            const Icon = item.icon;
+            return (
+              <Link
+                key={item.path}
+                to={item.path}
+                className={`flex items-center gap-4 px-4 py-3 rounded-lg transition-all ${
+                  isActive(item.path)
+                    ? "bg-white/20 border-l-4 border-white"
+                    : "hover:bg-white/10"
+                }`}
+              >
+                <Icon size={24} />
+                {isOpen && <span className="font-medium">{item.label}</span>}
+              </Link>
+            );
+          })}
         </nav>
 
         {/* User Profile & Logout */}
@@ -66,7 +70,7 @@ const Sidebar = () => {
             onClick={logout}
             className="w-full bg-red-500 hover:bg-red-600 text-white font-semibold py-2 rounded-lg transition-all flex items-center justify-center gap-2"
           >
-            <span>🚪</span>
+            <LogOut size={20} />
             {isOpen && "Logout"}
           </button>
         </div>

@@ -8,8 +8,32 @@ export const register = async (req, res) => {
   try {
     const { name, email, password } = req.body;
 
+    // 0️⃣ Validate inputs
+    if (!name || !email || !password) {
+      return res.status(400).json({
+        success: false,
+        error: "Name, email, and password are required",
+      });
+    }
+
+    if (password.length < 6) {
+      return res.status(400).json({
+        success: false,
+        error: "Password must be at least 6 characters",
+      });
+    }
+
+    // Validate email format
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    if (!emailRegex.test(email)) {
+      return res.status(400).json({
+        success: false,
+        error: "Invalid email format",
+      });
+    }
+
     // 1️⃣ Check if email exists
-    const exists = await User.findOne({ email });
+    const exists = await User.findOne({ email: email.toLowerCase() });
     if (exists) {
       return res.status(400).json({
         success: false,
@@ -22,11 +46,13 @@ export const register = async (req, res) => {
 
     // 3️⃣ Create user
     const user = await User.create({
-      name,
-      email,
+      name: name.trim(),
+      email: email.toLowerCase().trim(),
       passwordHash: hash,
       isEmailVerified: false,
     });
+
+    console.log("User created:", user._id);
 
     // 4️⃣ Create OTP
     const otp = Math.floor(100000 + Math.random() * 900000).toString();
@@ -38,31 +64,32 @@ export const register = async (req, res) => {
       expiresAt: new Date(Date.now() + 1000 * 60 * 10),
     });
 
+    console.log("OTP created for user:", user._id);
+
     // 5️⃣ Send OTP
     const emailSent = await sendOTP(email, otp);
     if (!emailSent) {
+      console.error("Failed to send email to:", email);
       return res.status(500).json({
         success: false,
-        error: "Failed to send OTP",
+        error: "Failed to send OTP email",
       });
     }
 
     // 6️⃣ Final response
-    return res.status(200).json({
+    return res.status(201).json({
       success: true,
-      message: "OTP sent successfully",
+      message: "OTP sent successfully to your email",
       email,
     });
-
   } catch (error) {
-    console.error("REGISTER ERROR:", error);
+    console.error("REGISTER ERROR:", error.message);
     return res.status(500).json({
       success: false,
-      error: error.message,
+      error: error.message || "Registration failed",
     });
   }
 };
-
 
 export const verifyOTP = async (req, res) => {
   try {
@@ -92,12 +119,10 @@ export const verifyOTP = async (req, res) => {
     const token = jwt.sign({ id: user._id }, process.env.JWT_SECRET);
 
     res.json({ token });
-
   } catch (err) {
     res.status(500).json({ error: err.message });
   }
 };
-
 
 export const login = async (req, res) => {
   try {
@@ -123,7 +148,6 @@ export const login = async (req, res) => {
         email: user.email,
       },
     });
-
   } catch (err) {
     res.status(500).json({ error: err.message });
   }

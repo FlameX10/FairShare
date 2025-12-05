@@ -1,4 +1,4 @@
-import nodemailer from "nodemailer";
+import { transporter } from "./email.js";
 
 export const sendOTP = async (email, otp) => {
   try {
@@ -8,27 +8,22 @@ export const sendOTP = async (email, otp) => {
     }
 
     console.log("Sending OTP to:", email);
-    
-    const transporter = nodemailer.createTransport({
-      service: "gmail",
-      auth: {
-        user: process.env.EMAIL_USER,
-        pass: process.env.EMAIL_PASS
-      }
-    });
 
-    const mailOptions = {
+    // Send email with timeout
+    const sendPromise = transporter.sendMail({
       from: process.env.EMAIL_USER,
       to: email,
       subject: "Your FairShare OTP",
-      html: `
-        <h2>Welcome to FairShare! 🎉</h2>
-        <p>Your OTP: <strong style="font-size: 24px; color: #2563eb;">${otp}</strong></p>
-        <p>Valid for 10 minutes</p>
-      `
-    };
+      text: `Your OTP is: ${otp}. Valid for 10 minutes.`,
+      html: `<h2>Welcome to FairShare 🎉</h2><p>Your OTP: <strong>${otp}</strong></p><p>Valid for 10 minutes.</p>`,
+    });
 
-    await transporter.sendMail(mailOptions);
+    // Timeout after 20 seconds
+    const timeoutPromise = new Promise((_, reject) =>
+      setTimeout(() => reject(new Error("Email send timeout")), 20000)
+    );
+
+    await Promise.race([sendPromise, timeoutPromise]);
     console.log("OTP sent successfully to:", email);
     return true;
   } catch (error) {
@@ -36,4 +31,3 @@ export const sendOTP = async (email, otp) => {
     return false;
   }
 };
-

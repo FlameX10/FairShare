@@ -37,19 +37,36 @@ const Register = () => {
     }
 
     try {
+      console.log("API URL:", API_URL);
+      console.log("Sending registration request...", formData);
+      
       const response = await axios.post(
         `${API_URL}/api/auth/register`,
-        formData
+        formData,
+        { timeout: 30000 } // Increased to 30 seconds
       );
 
+      console.log("Registration response:", response.data);
+
       if (response.data.success) {
+        localStorage.setItem("pendingEmail", formData.email);
         setToast("OTP sent to your email!");
-        setTimeout(() => navigate("/verify-otp"), 1500);
+        setLoading(false);
+        setTimeout(() => navigate("/verify-otp", { state: { email: formData.email } }), 1500);
+      } else {
+        setError(response.data.error || "Registration failed");
+        setLoading(false);
       }
     } catch (err) {
-      setError(err.response?.data?.error || "Registration failed");
-      setToast("Error: " + (err.response?.data?.error || "Registration failed"));
-    } finally {
+      console.error("Registration error:", err);
+      if (err.code === "ECONNABORTED") {
+        setError("Request timeout - Backend not responding. Check if server is running.");
+      } else if (!err.response) {
+        setError(`Cannot reach backend at ${API_URL}`);
+      } else {
+        setError(err.response?.data?.error || err.message || "Registration failed");
+      }
+      setToast("Error: " + (err.message || "Registration failed"));
       setLoading(false);
     }
   };

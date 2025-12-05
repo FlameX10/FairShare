@@ -77,7 +77,7 @@ export const register = async (req, res) => {
       console.error("Failed to send email to:", email);
       return res.status(500).json({
         success: false,
-        error: "Failed to send OTP email",
+        error: "Failed to send OTP email. Check email configuration.",
       });
     }
 
@@ -89,6 +89,7 @@ export const register = async (req, res) => {
     });
   } catch (error) {
     console.error("REGISTER ERROR:", error.message);
+    console.error("Full error:", error);
     return res.status(500).json({
       success: false,
       error: error.message || "Registration failed",

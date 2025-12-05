@@ -13,8 +13,14 @@ API.interceptors.request.use((config) => {
   return config;
 });
 
-export const addExpense = (friendId, amount, description) =>
-  API.post("/api/expense/add", { friendId, amount, description });
+export const addExpense = (friendId, amount, description, type = "personal", datetime) =>
+  API.post("/api/expense/add", { 
+    friendId, 
+    amount, 
+    description,
+    type,
+    datetime
+  });
 
 export const getExpenses = () => API.get("/api/expense/list");
 

@@ -25,7 +25,7 @@ connectDB();
 
 app.use("/api/auth", authRoutes);
 app.use("/api/friends", friendRoutes);
-app.use("/api/expenses", expenseRoutes);
+app.use("/api/expense", expenseRoutes);
 app.use("/api/upi", upiRoutes);
 app.use("/api/pdf", pdfRoutes);
 

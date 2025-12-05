@@ -1,5 +1,6 @@
 import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
 import ProtectedRoute from "./components/ProtectedRoute";
+import Layout from "./components/Layout";
 import useAuth from "./hooks/useAuth";
 
 // Pages
@@ -22,20 +23,24 @@ function App() {
   return (
     <BrowserRouter>
       <Routes>
+        {/* Auth Routes - No Sidebar */}
         <Route path="/register" element={<Register />} />
         <Route path="/verify-otp" element={<VerifyOtp />} />
         <Route path="/login" element={<Login />} />
 
+        {/* Protected Routes - With Sidebar */}
         <Route element={<ProtectedRoute />}>
-          <Route path="/dashboard" element={<Dashboard />} />
-          <Route path="/friends" element={<Friends />} />
-          <Route path="/friends/add" element={<AddFriend />} />
-          <Route path="/expenses" element={<Expenses />} />
-          <Route path="/expenses/add" element={<AddExpense />} />
-          <Route path="/expenses/summary" element={<Summary />} />
-          <Route path="/upi" element={<UPI />} />
-          <Route path="/upi/send" element={<SendUPI />} />
-          <Route path="/reports" element={<Reports />} />
+          <Route element={<Layout />}>
+            <Route path="/dashboard" element={<Dashboard />} />
+            <Route path="/friends" element={<Friends />} />
+            <Route path="/friends/add" element={<AddFriend />} />
+            <Route path="/expenses" element={<Expenses />} />
+            <Route path="/expenses/add" element={<AddExpense />} />
+            <Route path="/expenses/summary" element={<Summary />} />
+            <Route path="/upi" element={<UPI />} />
+            <Route path="/upi/send" element={<SendUPI />} />
+            <Route path="/reports" element={<Reports />} />
+          </Route>
         </Route>
 
         <Route path="/" element={<Navigate to={token ? "/dashboard" : "/login"} />} />

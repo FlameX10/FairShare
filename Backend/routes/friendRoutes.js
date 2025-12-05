@@ -5,6 +5,6 @@ import { auth } from "../middleware/authMiddleware.js";
 const router = express.Router();
 
 router.post("/add", auth, addFriend);
-router.get("/", auth, getFriends);
+router.get("/list", auth, getFriends);
 
 export default router;

@@ -13,26 +13,28 @@ export const sendOTPEmail = async (email, otp) => {
 
     const expiryTime = new Date(Date.now() + 15 * 60 * 1000).toLocaleTimeString();
 
-    const response = await axios.post(
-      EMAILJS_API_URL,
-      {
-        service_id: process.env.EMAILJS_SERVICE_ID,
-        template_id: process.env.EMAILJS_TEMPLATE_ID,
-        user_id: process.env.EMAILJS_PUBLIC_KEY,
-        template_params: {
-          email: email,
-          passcode: otp,
-          time: expiryTime,
-          company: "FairShare",
-        },
+    const payload = {
+      service_id: process.env.EMAILJS_SERVICE_ID,
+      template_id: process.env.EMAILJS_TEMPLATE_ID,
+      user_id: process.env.EMAILJS_PUBLIC_KEY,
+      template_params: {
+        to_email: email,
+        passcode: otp,
+        time: expiryTime,
+        company: "FairShare",
       },
-      { timeout: 10000 }
-    );
+    };
 
-    console.log(`[EMAIL] OTP sent successfully to ${email}`, response.status);
+    console.log("[EMAIL] Payload:", { ...payload, template_params: { ...payload.template_params, passcode: "***" } });
+
+    const response = await axios.post(EMAILJS_API_URL, payload, { timeout: 10000 });
+
+    console.log(`[EMAIL] OTP sent successfully to ${email}`);
     return true;
   } catch (error) {
-    console.error(`[EMAIL ERROR]`, error.response?.data?.message || error.message);
+    console.error(`[EMAIL ERROR] Status:`, error.response?.status);
+    console.error(`[EMAIL ERROR] Data:`, error.response?.data);
+    console.error(`[EMAIL ERROR] Message:`, error.message);
     return false;
   }
 };

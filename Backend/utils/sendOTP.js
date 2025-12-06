@@ -9,8 +9,8 @@ export const sendOTP = async (email, otp) => {
 
     console.log(`[OTP] Sending OTP to ${email}`);
 
-    await transporter.sendMail({
-      from: process.env.MAIL_FROM,
+    const mailOptions = {
+      from: process.env.MAIL_FROM || "no-reply@fairshare.io",
       to: email,
       subject: "Your FairShare OTP",
       html: `
@@ -24,9 +24,17 @@ export const sendOTP = async (email, otp) => {
           <p style="color: #999; font-size: 12px;">If you didn't request this, ignore this email.</p>
         </div>
       `,
-    });
+    };
 
-    console.log(`[OTP] OTP sent successfully to ${email}`);
+    // Send with timeout
+    const result = await Promise.race([
+      transporter.sendMail(mailOptions),
+      new Promise((_, reject) =>
+        setTimeout(() => reject(new Error("Email send timeout")), 8000)
+      ),
+    ]);
+
+    console.log(`[OTP] Email sent successfully to ${email}`);
     return true;
   } catch (error) {
     console.error("[OTP ERROR]", error.message);

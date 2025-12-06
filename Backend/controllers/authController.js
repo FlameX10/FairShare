@@ -2,8 +2,9 @@ import User from "../models/User.js";
 import OTP from "../models/OTP.js";
 import bcrypt from "bcrypt";
 import jwt from "jsonwebtoken";
-import { sendOTP } from "../utils/sendOTP.js";
+import { generateOTP } from "../utils/otp.js";
 import { generateToken } from "../utils/jwt.js";
+
 export const register = async (req, res) => {
   try {
     const { name, email, password } = req.body;
@@ -34,8 +35,8 @@ export const register = async (req, res) => {
     }
 
     // Check if email exists
-    const exists = await User.findOne({ email: email.toLowerCase() });
-    if (exists) {
+    const existingUser = await User.findOne({ email: email.toLowerCase() });
+    if (existingUser) {
       return res.status(400).json({
         success: false,
         error: "Email already registered",
@@ -55,25 +56,8 @@ export const register = async (req, res) => {
 
     console.log("[AUTH] User created:", user._id);
 
-    // Generate OTP
-    const otp = Math.floor(100000 + Math.random() * 900000).toString();
-
-    await OTP.create({
-      userId: user._id,
-      otp,
-      purpose: "first_login",
-      expiresAt: new Date(Date.now() + 15 * 60 * 1000), // 15 minutes
-    });
-
-    console.log("[AUTH] OTP created for user:", user._id);
-
-    // Send OTP
-    const emailSent = await sendOTP(email, otp);
-
-    if (!emailSent) {
-      // Still return success - user can request OTP again
-      console.warn("[AUTH] OTP email failed but continuing...");
-    }
+    // Generate and send OTP
+    await generateOTP(user._id, email);
 
     return res.status(201).json({
       success: true,
@@ -95,30 +79,49 @@ export const verifyOTP = async (req, res) => {
 
     // Find user
     const user = await User.findOne({ email });
-    if (!user)
-      return res.status(400).json({ success: false, message: "User not found" });
+    if (!user) {
+      return res.status(400).json({
+        success: false,
+        message: "User not found",
+      });
+    }
 
-    // Validate OTP
+    // Validate OTP + check expiry
     const dbOtp = await OTP.findOne({
       userId: user._id,
       otp,
       purpose: "first_login",
     });
 
-    if (!dbOtp)
-      return res.status(400).json({ success: false, message: "Invalid OTP" });
+    if (!dbOtp) {
+      return res.status(400).json({
+        success: false,
+        message: "Invalid OTP",
+      });
+    }
+
+    if (dbOtp.expiresAt < new Date()) {
+      return res.status(400).json({
+        success: false,
+        message: "OTP expired. Request a new one.",
+      });
+    }
 
     // Mark user verified
     user.isEmailVerified = true;
     await user.save();
 
-    // Remove OTPs
+    // Remove old OTPs
     await OTP.deleteMany({ userId: user._id });
 
     // Generate token
-    const token = jwt.sign({ id: user._id }, process.env.JWT_SECRET);
+    const token = jwt.sign(
+      { id: user._id },
+      process.env.JWT_SECRET,
+      { expiresIn: process.env.JWT_EXPIRES }
+    );
 
-    res.json({
+    return res.json({
       success: true,
       token,
       user: {
@@ -128,7 +131,11 @@ export const verifyOTP = async (req, res) => {
       },
     });
   } catch (err) {
-    res.status(500).json({ success: false, error: err.message });
+    console.error("[VERIFY OTP ERROR]", err);
+    return res.status(500).json({
+      success: false,
+      error: err.message,
+    });
   }
 };
 
@@ -138,16 +145,27 @@ export const login = async (req, res) => {
 
     // Find user
     const user = await User.findOne({ email });
-    if (!user) return res.status(400).json({ message: "Invalid email" });
+    if (!user) {
+      return res.status(400).json({
+        success: false,
+        message: "Invalid email",
+      });
+    }
 
     // Compare password
     const match = await bcrypt.compare(password, user.passwordHash);
-    if (!match) return res.status(400).json({ message: "Wrong password" });
+    if (!match) {
+      return res.status(400).json({
+        success: false,
+        message: "Wrong password",
+      });
+    }
 
     // Generate token
     const token = generateToken(user._id);
 
-    res.json({
+    return res.json({
+      success: true,
       message: "Login successful",
       token,
       user: {
@@ -157,6 +175,10 @@ export const login = async (req, res) => {
       },
     });
   } catch (err) {
-    res.status(500).json({ error: err.message });
+    console.error("[LOGIN ERROR]", err);
+    return res.status(500).json({
+      success: false,
+      error: err.message,
+    });
   }
 };

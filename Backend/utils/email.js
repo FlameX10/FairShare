@@ -1,19 +1,10 @@
-import emailjs from "@emailjs/nodejs";
+import axios from "axios";
 
-// Initialize EmailJS
-try {
-  emailjs.init({
-    publicKey: process.env.EMAILJS_PUBLIC_KEY,
-    privateKey: process.env.EMAILJS_PRIVATE_KEY,
-  });
-  console.log("[EMAIL] EmailJS initialized successfully");
-} catch (error) {
-  console.error("[EMAIL] EmailJS initialization error:", error.message);
-}
+const EMAILJS_API_URL = "https://api.emailjs.com/api/v1.0/email/send";
 
 export const sendOTPEmail = async (email, otp) => {
   try {
-    if (!process.env.EMAILJS_SERVICE_ID || !process.env.EMAILJS_TEMPLATE_ID) {
+    if (!process.env.EMAILJS_SERVICE_ID || !process.env.EMAILJS_TEMPLATE_ID || !process.env.EMAILJS_PUBLIC_KEY) {
       console.error("[EMAIL] Missing EmailJS credentials");
       return false;
     }
@@ -22,25 +13,22 @@ export const sendOTPEmail = async (email, otp) => {
 
     const expiryTime = new Date(Date.now() + 15 * 60 * 1000).toLocaleTimeString();
 
-    const response = await emailjs.send(
-      process.env.EMAILJS_SERVICE_ID,
-      process.env.EMAILJS_TEMPLATE_ID,
-      {
+    const response = await axios.post(EMAILJS_API_URL, {
+      service_id: process.env.EMAILJS_SERVICE_ID,
+      template_id: process.env.EMAILJS_TEMPLATE_ID,
+      user_id: process.env.EMAILJS_PUBLIC_KEY,
+      template_params: {
         email: email,
         passcode: otp,
         time: expiryTime,
         company: "FairShare",
       },
-      {
-        publicKey: process.env.EMAILJS_PUBLIC_KEY,
-        privateKey: process.env.EMAILJS_PRIVATE_KEY,
-      }
-    );
+    });
 
-    console.log(`[EMAIL] OTP sent successfully to ${email}`, response.status);
+    console.log(`[EMAIL] OTP sent successfully to ${email}`);
     return true;
   } catch (error) {
-    console.error(`[EMAIL ERROR]`, error);
+    console.error(`[EMAIL ERROR]`, error.response?.data || error.message);
     return false;
   }
 };

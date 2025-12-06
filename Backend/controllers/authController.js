@@ -62,7 +62,7 @@ export const register = async (req, res) => {
       userId: user._id,
       otp,
       purpose: "first_login",
-      expiresAt: new Date(Date.now() + 10 * 60 * 1000), // 10 minutes
+      expiresAt: new Date(Date.now() + 15 * 60 * 1000), // 15 minutes
     });
 
     console.log("[AUTH] OTP created for user:", user._id);

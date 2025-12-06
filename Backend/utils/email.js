@@ -4,15 +4,14 @@ export const sendOTPEmail = async (email, otp) => {
   try {
     console.log(`[EMAIL] Sending OTP to ${email}`);
 
-    const expiryTime = new Date(
-      Date.now() + 15 * 60 * 1000
-    ).toLocaleTimeString();
+    const expiryTime = new Date(Date.now() + 15 * 60 * 1000)
+      .toLocaleTimeString();
 
-    await emailjs.send(
+    const response = await emailjs.send(
       process.env.EMAILJS_SERVICE_ID,
       process.env.EMAILJS_TEMPLATE_ID,
       {
-        to_email: email,
+        email: email,
         passcode: otp,
         time: expiryTime,
         company: "FairShare",
@@ -25,10 +24,9 @@ export const sendOTPEmail = async (email, otp) => {
 
     console.log("[EMAIL] OTP sent successfully");
     return true;
-
+    
   } catch (error) {
-    console.error("[EMAIL ERROR] Status:", error.response?.status);
-    console.error("[EMAIL ERROR] Message:", error?.response?.data || error.message);
+    console.error("[EMAIL ERROR RAW]", error);
     return false;
   }
 };

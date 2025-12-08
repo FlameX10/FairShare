@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { Plus } from "lucide-react";
+import { Plus, Loader } from "lucide-react";
 import { addFriend } from "../api/friends";
 import Button from "../components/Button";
 import Card from "../components/Card";

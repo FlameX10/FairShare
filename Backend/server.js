@@ -14,7 +14,7 @@ const app = express();
 // CORS middleware
 app.use(cors({
   origin: [
-    "http://localhost:3000",
+    "http://localhost:3002",
     "https://splitoo.netlify.app",
     "https://fairshare-frontend.netlify.app"
   ],

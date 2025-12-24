@@ -1,0 +1,52 @@
+#!/bin/bash
+
+# Expense Tracker - Complete Setup Guide
+
+echo "======================================"
+echo "  Expense Tracker - Setup Instructions"
+echo "======================================"
+echo ""
+
+echo "✅ WHAT HAS BEEN FIXED:"
+echo "   1. Vite React preamble error (index.html had invalid HTML comments)"
+echo "   2. React 19 compatibility (updated main.jsx syntax)"
+echo "   3. Vite config (optimized for React 19)"
+echo ""
+
+echo "📊 DATABASE SETUP REQUIRED:"
+echo ""
+echo "   Choose one option:"
+echo ""
+echo "   Option 1: MongoDB Atlas (Cloud - RECOMMENDED)"
+echo "   ├─ Go to: https://www.mongodb.com/cloud/atlas"
+echo "   ├─ Sign up for free"
+echo "   ├─ Create a cluster"
+echo "   ├─ Set username: v1fairshare, password: paras12345"
+echo "   └─ Get connection string and update Backend/.env"
+echo ""
+echo "   Option 2: MongoDB Community (Local)"
+echo "   ├─ Download: https://www.mongodb.com/try/download/community"
+echo "   ├─ Install as Windows Service"
+echo "   ├─ Update Backend/.env: MONGO_URI=mongodb://localhost:27017/fairshare"
+echo "   └─ Start MongoDB service"
+echo ""
+echo "   Option 3: Docker"
+echo "   └─ Run: docker run -d -p 27017:27017 --name mongodb mongo:latest"
+echo ""
+
+echo "🚀 START YOUR APPLICATION:"
+echo ""
+echo "   Terminal 1 - Backend:"
+echo "   └─ cd Backend && npm run dev"
+echo ""
+echo "   Terminal 2 - Frontend:"
+echo "   └─ cd Frontend && npm run dev"
+echo ""
+
+echo "🔗 URLs:"
+echo "   Frontend: http://localhost:3003/ (or next available port)"
+echo "   Backend:  http://localhost:5000/"
+echo ""
+
+echo "📖 Full guide available in: MONGODB_SETUP.md"
+echo ""

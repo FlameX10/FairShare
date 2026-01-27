@@ -66,6 +66,9 @@ const AuthProvider = ({ children }) => {
   const login = async (email, password) => {
     setLoading(true);
     try {
+      console.log("[LOGIN] API_URL:", API_URL);
+      console.log("[LOGIN] Attempting login for:", email);
+      
       const response = await authAPI.post("/api/auth/login", {
         email,
         password,
@@ -78,6 +81,13 @@ const AuthProvider = ({ children }) => {
       setLoading(false);
       return response.data;
     } catch (error) {
+      console.error("[LOGIN] Error Details:", {
+        message: error.message,
+        status: error.response?.status,
+        data: error.response?.data,
+        url: error.config?.url,
+        code: error.code
+      });
       setLoading(false);
       throw error.response?.data || error.message;
     }

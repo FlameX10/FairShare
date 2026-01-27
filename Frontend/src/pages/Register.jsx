@@ -38,7 +38,7 @@ const Register = () => {
 
     try {
       console.log("[REGISTER] API_URL:", API_URL);
-      console.log("[REGISTER] Sending request...");
+      console.log("[REGISTER] Sending request to:", `${API_URL}/api/auth/register`);
       
       const response = await axios.post(
         `${API_URL}/api/auth/register`,
@@ -55,11 +55,19 @@ const Register = () => {
         setTimeout(() => navigate("/verify-otp", { state: { email: formData.email } }), 2000);
       }
     } catch (err) {
-      console.error("[REGISTER] Error:", err.message);
+      console.error("[REGISTER] Full Error Details:", {
+        message: err.message,
+        status: err.response?.status,
+        statusText: err.response?.statusText,
+        data: err.response?.data,
+        url: err.config?.url,
+        method: err.config?.method,
+        code: err.code
+      });
       setLoading(false);
       
       if (!err.response) {
-        setError("Backend unreachable. Check your internet connection.");
+        setError("Backend unreachable. Check your internet connection. Error: " + err.message);
       } else {
         setError(err.response?.data?.error || "Registration failed");
       }

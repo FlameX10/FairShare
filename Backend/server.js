@@ -12,12 +12,21 @@ import pdfRoutes from "./routes/pdfRoutes.js";
 const app = express();
 
 // CORS middleware
+const allowedOrigins = [
+  "http://localhost:3002",
+  "http://localhost:3000",
+  "http://localhost:5173",
+  "https://splitoo.netlify.app",
+  "https://fairshare-frontend.netlify.app"
+];
+
+// Add frontend URL from environment if set
+if (process.env.FRONTEND_URL) {
+  allowedOrigins.push(process.env.FRONTEND_URL);
+}
+
 app.use(cors({
-  origin: [
-    "http://localhost:3002",
-    "https://splitoo.netlify.app",
-    "https://fairshare-frontend.netlify.app"
-  ],
+  origin: allowedOrigins,
   credentials: true,
   methods: ["GET", "POST", "PUT", "DELETE", "PATCH"],
   allowedHeaders: ["Content-Type", "Authorization"]

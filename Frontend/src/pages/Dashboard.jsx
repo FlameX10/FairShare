@@ -65,25 +65,26 @@ const Dashboard = () => {
   );
 
   return (
-    <div className="p-8 bg-gradient-to-br from-dark-50 via-white to-primary-50 min-h-screen">
+    <div className="p-4 lg:p-8 bg-dark-50 min-h-screen">
       {/* Header */}
-      <div className="mb-8 flex items-center justify-between">
+      <div className="mb-8 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
         <div>
-          <h1 className="text-4xl font-bold bg-gradient-to-r from-primary-600 to-secondary-600 bg-clip-text text-transparent">
+          <h1 className="text-3xl lg:text-4xl font-bold text-primary-600">
             Dashboard
           </h1>
           <p className="text-dark-600 mt-2">Welcome back! Here's your financial overview</p>
         </div>
         <Link to="/expenses/add">
-          <Button variant="primary" size="lg">
+          <Button variant="primary" size="lg" className="w-full sm:w-auto">
             <Zap size={18} />
-            Add Expense
+            <span className="hidden sm:inline">Add Expense</span>
+            <span className="sm:hidden">Add</span>
           </Button>
         </Link>
       </div>
 
       {/* Stats Grid */}
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-4 mb-8">
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-4 mb-8">
         <StatCard 
           label="Total Lent" 
           value={`₹${stats.totalLent}`} 
@@ -140,7 +141,7 @@ const Dashboard = () => {
             {recentExpenses.map((exp) => (
               <div 
                 key={exp._id} 
-                className="flex items-center justify-between p-4 bg-gradient-to-r from-dark-50 to-primary-50 rounded-xl border border-dark-100 hover:border-primary-300 transition-all duration-300 hover:shadow-md"
+                className="flex items-center justify-between p-4 bg-dark-50 rounded-xl border border-dark-100 hover:border-primary-300 transition-all duration-300 hover:shadow-md"
               >
                 <div className="flex-1">
                   <div className="flex items-center gap-2 mb-1">

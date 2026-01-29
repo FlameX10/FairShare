@@ -207,7 +207,7 @@ const AddExpense = () => {
             {/* Submit Button */}
             <Button
               type="submit"
-              variant="primary"
+              variant="success"
               size="lg"
               disabled={loading}
               loading={loading}

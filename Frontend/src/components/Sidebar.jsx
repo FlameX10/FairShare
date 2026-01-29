@@ -60,14 +60,14 @@ const Sidebar = () => {
                 <Link
                   key={item.path}
                   to={item.path}
-                  className={`flex items-center gap-4 px-4 py-3 rounded-lg transition-all duration-200 text-white ${
+                  className={`flex items-center gap-4 px-4 py-3 rounded-lg transition-all duration-200 text-white font-medium ${
                     isActive(item.path)
                       ? "bg-white/20 border-l-4 border-white shadow-lg"
-                      : "hover:bg-white/10 border-l-4 border-transparent"
+                      : "hover:bg-white/20 hover:text-white border-l-4 border-transparent"
                   }`}
                 >
                   <Icon size={22} />
-                  {isOpen && <span className="font-medium text-sm">{item.label}</span>}
+                  {isOpen && <span className="text-sm">{item.label}</span>}
                 </Link>
               );
             })}
@@ -84,10 +84,10 @@ const Sidebar = () => {
                 <Link
                   key={item.path}
                   to={item.path}
-                  className="flex items-center gap-4 px-4 py-2.5 rounded-lg transition-all duration-200 text-white hover:bg-primary-600/50"
+                  className="flex items-center gap-4 px-4 py-2.5 rounded-lg transition-all duration-200 text-white font-medium hover:bg-white/20 hover:text-white"
                 >
                   <Icon size={20} />
-                  {isOpen && <span className="font-medium text-sm">{item.label}</span>}
+                  {isOpen && <span className="text-sm">{item.label}</span>}
                 </Link>
               );
             })}

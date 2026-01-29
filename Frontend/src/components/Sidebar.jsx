@@ -60,7 +60,7 @@ const Sidebar = () => {
                 <Link
                   key={item.path}
                   to={item.path}
-                  className={`flex items-center gap-4 px-4 py-3 rounded-lg transition-all duration-200 ${
+                  className={`flex items-center gap-4 px-4 py-3 rounded-lg transition-all duration-200 text-white ${
                     isActive(item.path)
                       ? "bg-white/20 border-l-4 border-white shadow-lg"
                       : "hover:bg-white/10 border-l-4 border-transparent"
@@ -84,7 +84,7 @@ const Sidebar = () => {
                 <Link
                   key={item.path}
                   to={item.path}
-                  className="flex items-center gap-4 px-4 py-2.5 rounded-lg transition-all duration-200 text-primary-100 hover:bg-primary-600/50"
+                  className="flex items-center gap-4 px-4 py-2.5 rounded-lg transition-all duration-200 text-white hover:bg-primary-600/50"
                 >
                   <Icon size={20} />
                   {isOpen && <span className="font-medium text-sm">{item.label}</span>}

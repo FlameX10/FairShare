@@ -1,6 +1,6 @@
 const Loader = () => {
   return (
-    <div className="flex items-center justify-center min-h-screen bg-gradient-to-br from-dark-50 via-white to-primary-50">
+    <div className="flex items-center justify-center min-h-screen bg-dark-50">
       <div className="flex flex-col items-center gap-4">
         {/* Animated Spinner */}
         <div className="relative w-16 h-16">

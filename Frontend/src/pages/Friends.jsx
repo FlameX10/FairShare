@@ -146,15 +146,15 @@ const Friends = () => {
   const balanceInfo = selectedBalance ? getBalanceText(selectedBalance.balance) : null;
 
   return (
-    <div className="p-8 bg-gradient-to-br from-dark-50 via-white to-primary-50 min-h-screen">
+    <div className="p-4 sm:p-6 lg:p-8 bg-dark-50 min-h-screen">
       {toast && <Toast message={toast} type={toast.includes("Error") ? "error" : "success"} />}
       
       <div className="max-w-7xl mx-auto">
         {/* Header */}
-        <div className="flex justify-between items-center mb-8">
+        <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 mb-8">
           <div>
-            <h1 className="text-4xl font-bold bg-gradient-to-r from-primary-600 to-secondary-600 bg-clip-text text-transparent flex items-center gap-3">
-              <Users size={36} />
+            <h1 className="text-3xl sm:text-4xl font-bold text-primary-600 flex items-center gap-3">
+              <Users size={32} />
               Friends
             </h1>
             <p className="text-dark-600 mt-2">Manage your friend relationships and track shared expenses</p>
@@ -167,7 +167,7 @@ const Friends = () => {
           </Link>
         </div>
 
-        <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+        <div className="grid grid-cols-1 lg:grid-cols-3 gap-4 sm:gap-6">
           {/* Friends List */}
           <Card variant="elevated" className="h-fit">
             <h2 className="text-xl font-bold text-dark-900 mb-4 flex items-center gap-2">
@@ -182,7 +182,7 @@ const Friends = () => {
                     onClick={() => handleSelectFriend(friend)}
                     className={`w-full text-left px-4 py-3 rounded-xl transition-all duration-200 ${
                       selectedFriend?._id === friend._id
-                        ? "bg-gradient-to-r from-primary-600 to-primary-700 text-white shadow-md"
+                        ? "bg-primary-600 text-white shadow-md"
                         : "bg-dark-50 text-dark-900 hover:bg-dark-100 border border-dark-200"
                     }`}
                   >
@@ -203,15 +203,15 @@ const Friends = () => {
           </Card>
 
           {/* Friend Details & Expenses */}
-          <div className="lg:col-span-2 space-y-6">
+          <div className="col-span-1 lg:col-span-2 space-y-4 sm:space-y-6">
             {selectedFriend ? (
               <>
                 {/* Friend Info Card */}
-                <Card variant="elevated" className="bg-gradient-to-br from-primary-50 to-secondary-50">
-                  <div className="flex justify-between items-start mb-6">
+                <Card variant="elevated" className="bg-white">
+                  <div className="flex flex-col sm:flex-row justify-between items-start gap-4 mb-6">
                     <div className="flex-1">
                       <div className="flex items-center gap-3 mb-2">
-                        <div className="w-12 h-12 rounded-full bg-gradient-to-br from-primary-400 to-secondary-400 flex items-center justify-center">
+                        <div className="w-12 h-12 rounded-full bg-primary-600 flex items-center justify-center">
                           <span className="text-white font-bold text-lg">{selectedFriend.name.charAt(0)}</span>
                         </div>
                         <div>

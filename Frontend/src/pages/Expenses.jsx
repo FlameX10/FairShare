@@ -29,13 +29,13 @@ const Expenses = () => {
   if (loading) return <Loader />;
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-dark-50 via-white to-primary-50 p-8">
+    <div className="min-h-screen bg-dark-50 p-4 sm:p-6 lg:p-8">
       <div className="max-w-5xl mx-auto">
         {/* Header */}
-        <div className="flex justify-between items-center mb-8">
+        <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 mb-8">
           <div>
-            <h1 className="text-4xl font-bold bg-gradient-to-r from-primary-600 to-secondary-600 bg-clip-text text-transparent flex items-center gap-2">
-              <Receipt size={36} />
+            <h1 className="text-3xl sm:text-4xl font-bold text-primary-600 flex items-center gap-2">
+              <Receipt size={32} />
               Expenses
             </h1>
             <p className="text-dark-600 mt-2">Track and manage all your shared expenses</p>

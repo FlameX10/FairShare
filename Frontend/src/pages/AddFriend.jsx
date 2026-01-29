@@ -1,9 +1,10 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { Plus, Loader } from "lucide-react";
+import { Plus, User, Smartphone } from "lucide-react";
 import { addFriend } from "../api/friends";
 import Button from "../components/Button";
 import Card from "../components/Card";
+import Input from "../components/Input";
 import Toast from "../components/Toast";
 
 const AddFriend = () => {
@@ -38,61 +39,74 @@ const AddFriend = () => {
   };
 
   return (
-    <div className="p-8 bg-gray-50 min-h-screen">
+    <div className="p-8 bg-gradient-to-br from-dark-50 via-white to-secondary-50 min-h-screen">
       {toast && <Toast message={toast} type={toast.includes("Error") ? "error" : "success"} />}
-      <div className="max-w-md mx-auto">
-        <Card>
-          <h1 className="text-2xl font-bold mb-6 text-gray-800">Add Friend</h1>
+      <div className="max-w-lg mx-auto">
+        {/* Header */}
+        <div className="text-center mb-8">
+          <div className="mb-4 flex justify-center">
+            <div className="bg-gradient-to-r from-secondary-600 to-secondary-700 p-3 rounded-2xl">
+              <User size={32} className="text-white" />
+            </div>
+          </div>
+          <h1 className="text-3xl font-bold bg-gradient-to-r from-primary-600 to-secondary-600 bg-clip-text text-transparent mb-2">
+            Add Friend
+          </h1>
+          <p className="text-dark-600">Create a profile to start sharing expenses</p>
+        </div>
+
+        <Card variant="elevated">
           <form onSubmit={handleSubmit} className="space-y-6">
-            <div>
-              <label className="block text-sm font-semibold text-gray-700 mb-3">
-                Friend Name <span className="text-red-500">*</span>
+            {/* Friend Name */}
+            <Input
+              label="Friend Name"
+              type="text"
+              name="name"
+              placeholder="John Doe"
+              value={formData.name}
+              onChange={handleChange}
+              icon={User}
+              required
+            />
+
+            {/* UPI ID */}
+            <div className="mb-6">
+              <label className="block text-sm font-semibold text-dark-900 mb-2.5">
+                UPI ID <span className="text-dark-500 text-xs font-normal">(Optional)</span>
               </label>
-              <input
-                type="text"
-                placeholder="John Doe"
-                name="name"
-                value={formData.name}
-                onChange={handleChange}
-                required
-                className="w-full px-4 py-3 border-2 border-gray-300 rounded-lg focus:outline-none focus:border-blue-500 focus:ring-2 focus:ring-blue-200 transition-all text-base"
-              />
+              <div className="relative">
+                <Smartphone className="absolute left-3.5 top-3.5 text-dark-400 pointer-events-none" size={18} />
+                <input
+                  type="text"
+                  placeholder="john@upi"
+                  name="upiId"
+                  value={formData.upiId}
+                  onChange={handleChange}
+                  className="w-full pl-10 pr-4 py-2.5 border-2 border-dark-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-secondary-200 focus:border-secondary-500 transition-all text-sm bg-white hover:border-dark-400"
+                />
+              </div>
+              <p className="text-xs text-dark-500 mt-2">You can add or update this later</p>
             </div>
 
-            <div>
-              <label className="block text-sm font-semibold text-gray-700 mb-3">
-                UPI ID <span className="text-gray-500 text-xs">(Optional)</span>
-              </label>
-              <input
-                type="text"
-                placeholder="john@upi"
-                name="upiId"
-                value={formData.upiId}
-                onChange={handleChange}
-                className="w-full px-4 py-3 border-2 border-gray-300 rounded-lg focus:outline-none focus:border-blue-500 focus:ring-2 focus:ring-blue-200 transition-all text-base"
-              />
-              <p className="text-xs text-gray-500 mt-2">You can add this later</p>
-            </div>
-
-            <button
+            {/* Submit Button */}
+            <Button
               type="submit"
+              variant="primary"
+              size="lg"
               disabled={loading}
-              className="w-full bg-gradient-to-r from-blue-600 to-purple-600 text-white font-semibold py-3 rounded-lg hover:shadow-lg hover:shadow-blue-500/50 transition-all duration-200 disabled:opacity-70 disabled:cursor-not-allowed flex items-center justify-center gap-2 text-lg"
+              loading={loading}
+              className="w-full"
             >
-              {loading ? (
-                <>
-                  <Loader className="w-6 h-6 animate-spin" />
-                  Adding...
-                </>
-              ) : (
-                <>
-                  <Plus size={24} />
-                  Add Friend
-                </>
-              )}
-            </button>
+              <Plus size={20} />
+              Add Friend
+            </Button>
           </form>
         </Card>
+
+        {/* Footer Info */}
+        <div className="mt-8 text-center text-sm text-dark-600">
+          <p>You'll be able to track shared expenses with this friend</p>
+        </div>
       </div>
     </div>
   );

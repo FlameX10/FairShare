@@ -1,11 +1,12 @@
 import { useState, useEffect } from "react";
 import { Link } from "react-router-dom";
-import { TrendingUp, TrendingDown, Users, Clock, ArrowRight ,IndianRupee } from "lucide-react";
+import { TrendingUp, TrendingDown, Users, Clock, ArrowRight, IndianRupee, Zap } from "lucide-react";
 import { getExpenses, getExpenseSummary } from "../api/expenses";
 import { getUpiRequests } from "../api/upi";
 import { getFriends } from "../api/friends";
 import Card from "../components/Card";
 import Loader from "../components/Loader";
+import Button from "../components/Button";
 
 const Dashboard = () => {
   const [stats, setStats] = useState({
@@ -49,71 +50,124 @@ const Dashboard = () => {
 
   if (loading) return <Loader />;
 
-  const StatCard = ({ label, value, icon: Icon, color }) => (
-    <div className="bg-white border border-gray-200 rounded-lg p-6 shadow-sm">
+  const StatCard = ({ label, value, icon: Icon, color, bgColor }) => (
+    <Card variant="elevated" className="group">
       <div className="flex items-start justify-between">
         <div>
-          <p className="text-gray-600 text-sm font-medium">{label}</p>
-          <p className={`text-2xl font-semibold mt-2 ${color}`}>{value}</p>
+          <p className="text-dark-600 text-sm font-semibold mb-1">{label}</p>
+          <p className={`text-2xl font-bold ${color}`}>{value}</p>
         </div>
-        <Icon className={`${color} opacity-60`} size={24} />
+        <div className={`${bgColor} p-3 rounded-xl group-hover:scale-110 transition-transform duration-300`}>
+          <Icon className="text-white" size={24} />
+        </div>
       </div>
-    </div>
+    </Card>
   );
 
   return (
-    <div className="p-8 bg-gray-50 min-h-screen">
+    <div className="p-8 bg-gradient-to-br from-dark-50 via-white to-primary-50 min-h-screen">
       {/* Header */}
-      <div className="mb-8">
-        <h1 className="text-3xl font-semibold text-gray-900">Dashboard</h1>
-        <p className="text-gray-600 mt-1">Overview of your expenses and balances</p>
+      <div className="mb-8 flex items-center justify-between">
+        <div>
+          <h1 className="text-4xl font-bold bg-gradient-to-r from-primary-600 to-secondary-600 bg-clip-text text-transparent">
+            Dashboard
+          </h1>
+          <p className="text-dark-600 mt-2">Welcome back! Here's your financial overview</p>
+        </div>
+        <Link to="/expenses/add">
+          <Button variant="primary" size="lg">
+            <Zap size={18} />
+            Add Expense
+          </Button>
+        </Link>
       </div>
 
       {/* Stats Grid */}
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-4 mb-8">
-        <StatCard label="Total Lent" value={`₹${stats.totalLent}`} icon={TrendingUp} color="text-green-600" />
-        <StatCard label="Total Borrowed" value={`₹${stats.totalBorrowed}`} icon={TrendingDown} color="text-red-600" />
-        <StatCard label="Net Balance" value={`₹${Math.abs(stats.netBalance)}`} icon={IndianRupee} color="text-blue-600" />
-        <StatCard label="Pending UPI" value={stats.pendingUpi} icon={Clock} color="text-yellow-600" />
-        <StatCard label="Friends" value={stats.friendsCount} icon={Users} color="text-purple-600" />
+        <StatCard 
+          label="Total Lent" 
+          value={`₹${stats.totalLent}`} 
+          icon={TrendingUp} 
+          color="text-success-600" 
+          bgColor="bg-success-500"
+        />
+        <StatCard 
+          label="Total Borrowed" 
+          value={`₹${stats.totalBorrowed}`} 
+          icon={TrendingDown} 
+          color="text-danger-600" 
+          bgColor="bg-danger-500"
+        />
+        <StatCard 
+          label="Net Balance" 
+          value={`₹${Math.abs(stats.netBalance)}`} 
+          icon={IndianRupee} 
+          color="text-primary-600" 
+          bgColor="bg-primary-500"
+        />
+        <StatCard 
+          label="Pending UPI" 
+          value={stats.pendingUpi} 
+          icon={Clock} 
+          color="text-warning-600" 
+          bgColor="bg-warning-500"
+        />
+        <StatCard 
+          label="Friends" 
+          value={stats.friendsCount} 
+          icon={Users} 
+          color="text-secondary-600" 
+          bgColor="bg-secondary-500"
+        />
       </div>
 
       {/* Recent Transactions */}
-      <div className="bg-white border border-gray-200 rounded-lg p-6 shadow-sm">
+      <Card variant="elevated">
         <div className="flex justify-between items-center mb-6">
-          <h2 className="text-xl font-semibold text-gray-900">Recent Transactions</h2>
-          <Link to="/friends" className="text-blue-600 hover:text-blue-700 text-sm font-medium flex items-center gap-1">
-            View All <ArrowRight size={16} />
+          <div>
+            <h2 className="text-2xl font-bold text-dark-900">Recent Transactions</h2>
+            <p className="text-dark-600 text-sm mt-1">Your latest expense activities</p>
+          </div>
+          <Link to="/expenses">
+            <Button variant="ghost" size="md">
+              View All <ArrowRight size={16} />
+            </Button>
           </Link>
         </div>
 
         {recentExpenses.length > 0 ? (
-          <div className="space-y-2">
+          <div className="space-y-3">
             {recentExpenses.map((exp) => (
-              <div key={exp._id} className="flex items-center justify-between p-4 bg-gray-50 rounded-lg border border-gray-100">
+              <div 
+                key={exp._id} 
+                className="flex items-center justify-between p-4 bg-gradient-to-r from-dark-50 to-primary-50 rounded-xl border border-dark-100 hover:border-primary-300 transition-all duration-300 hover:shadow-md"
+              >
                 <div className="flex-1">
                   <div className="flex items-center gap-2 mb-1">
-                    <span className={`inline-block px-2.5 py-1 rounded text-xs font-medium ${
+                    <span className={`inline-block px-3 py-1 rounded-full text-xs font-bold ${
                       exp.type === "lend" 
-                        ? "bg-green-100 text-green-700" 
-                        : "bg-red-100 text-red-700"
+                        ? "bg-success-100 text-success-700" 
+                        : "bg-danger-100 text-danger-700"
                     }`}>
                       {exp.type === "lend" ? "Lent" : "Borrowed"}
                     </span>
                   </div>
-                  <p className="font-medium text-gray-900">{exp.description}</p>
-                  <p className="text-sm text-gray-500">{exp.friendId?.name} • {new Date(exp.datetime).toLocaleDateString()}</p>
+                  <p className="font-semibold text-dark-900">{exp.description}</p>
+                  <p className="text-sm text-dark-500">{exp.friendId?.name} • {new Date(exp.datetime).toLocaleDateString()}</p>
                 </div>
-                <p className={`text-lg font-semibold ${exp.type === "lend" ? "text-green-600" : "text-red-600"}`}>
+                <p className={`text-lg font-bold ${exp.type === "lend" ? "text-success-600" : "text-danger-600"}`}>
                   ₹{exp.amount}
                 </p>
               </div>
             ))}
           </div>
         ) : (
-          <p className="text-center text-gray-500 py-8">No transactions yet</p>
+          <div className="text-center py-12">
+            <p className="text-dark-500 font-medium">No transactions yet</p>
+            <p className="text-dark-400 text-sm mt-1">Start adding expenses to see your transaction history</p>
+          </div>
         )}
-      </div>
+      </Card>
     </div>
   );
 };

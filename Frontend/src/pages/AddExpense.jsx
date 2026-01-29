@@ -1,9 +1,11 @@
 import { useState, useEffect } from "react";
 import { useNavigate, useSearchParams } from "react-router-dom";
+import { Plus, Wallet, Tag, Calendar, TrendingUp, TrendingDown } from "lucide-react";
 import { addExpense } from "../api/expenses";
 import { getFriends } from "../api/friends";
 import Button from "../components/Button";
 import Card from "../components/Card";
+import Input from "../components/Input";
 import Toast from "../components/Toast";
 
 const AddExpense = () => {
@@ -78,33 +80,39 @@ const AddExpense = () => {
   const selectedFriendName = friends.find(f => f._id === formData.friendId)?.name;
 
   return (
-    <div className="p-8 bg-gray-50 min-h-screen">
+    <div className="p-8 bg-gradient-to-br from-dark-50 via-white to-primary-50 min-h-screen">
       <div className="max-w-2xl mx-auto">
         {toast && <Toast message={toast} type={toast.includes("Error") ? "error" : "success"} />}
 
-        <h1 className="text-3xl font-bold text-gray-800 mb-2">Add Transaction</h1>
-        {selectedFriendName && (
-          <p className="text-gray-600 mb-8">Transaction with <span className="font-semibold">{selectedFriendName}</span></p>
-        )}
+        {/* Header */}
+        <div className="mb-8">
+          <h1 className="text-4xl font-bold bg-gradient-to-r from-primary-600 to-secondary-600 bg-clip-text text-transparent mb-2 flex items-center gap-3">
+            <Wallet size={36} />
+            Add Transaction
+          </h1>
+          {selectedFriendName && (
+            <p className="text-dark-600 mt-3">Transaction with <span className="font-bold text-primary-600">{selectedFriendName}</span></p>
+          )}
+        </div>
 
-        <Card>
+        <Card variant="elevated">
           <form onSubmit={handleSubmit} className="space-y-6">
             {/* Friend Selection */}
             <div>
-              <label className="block text-sm font-semibold text-gray-700 mb-3">
-                Friend <span className="text-red-500">*</span>
+              <label className="block text-sm font-semibold text-dark-900 mb-2.5">
+                Select Friend <span className="text-danger-600">*</span>
               </label>
               <select
                 name="friendId"
                 value={formData.friendId}
                 onChange={handleChange}
                 required
-                className="w-full px-4 py-3 border-2 border-gray-300 rounded-lg focus:outline-none focus:border-blue-500 focus:ring-2 focus:ring-blue-200 transition-all text-base"
+                className="w-full px-4 py-2.5 border-2 border-dark-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-200 focus:border-primary-500 transition-all text-sm bg-white hover:border-dark-400"
               >
-                <option value="">Select a friend</option>
+                <option value="">Choose a friend...</option>
                 {friends.map((friend) => (
                   <option key={friend._id} value={friend._id}>
-                    {friend.name} ({friend.upiId})
+                    {friend.name} {friend.upiId && `(${friend.upiId})`}
                   </option>
                 ))}
               </select>
@@ -112,110 +120,102 @@ const AddExpense = () => {
 
             {/* Transaction Type */}
             <div>
-              <label className="block text-sm font-semibold text-gray-700 mb-3">
-                Transaction Type <span className="text-red-500">*</span>
+              <label className="block text-sm font-semibold text-dark-900 mb-3">
+                Transaction Type <span className="text-danger-600">*</span>
               </label>
               <div className="grid grid-cols-2 gap-4">
                 <button
                   type="button"
                   onClick={() => setFormData({ ...formData, type: "lend" })}
-                  className={`p-4 rounded-lg border-2 transition-all ${
+                  className={`p-5 rounded-xl border-2 transition-all duration-300 flex flex-col items-center gap-2 ${
                     formData.type === "lend"
-                      ? "border-green-500 bg-green-50"
-                      : "border-gray-300 bg-gray-50 hover:border-green-300"
+                      ? "border-success-500 bg-success-50 shadow-md"
+                      : "border-dark-200 bg-dark-50 hover:border-success-300"
                   }`}
                 >
-                  <p className="text-2xl mb-2">💰</p>
-                  <p className="font-semibold text-gray-800">You Lent</p>
-                  <p className="text-xs text-gray-600">Friend owes you</p>
+                  <TrendingUp className={formData.type === "lend" ? "text-success-600" : "text-dark-600"} size={24} />
+                  <p className="font-bold text-dark-900 text-sm">You Lent</p>
+                  <p className="text-xs text-dark-600">Friend owes you</p>
                 </button>
 
                 <button
                   type="button"
                   onClick={() => setFormData({ ...formData, type: "borrow" })}
-                  className={`p-4 rounded-lg border-2 transition-all ${
+                  className={`p-5 rounded-xl border-2 transition-all duration-300 flex flex-col items-center gap-2 ${
                     formData.type === "borrow"
-                      ? "border-red-500 bg-red-50"
-                      : "border-gray-300 bg-gray-50 hover:border-red-300"
+                      ? "border-danger-500 bg-danger-50 shadow-md"
+                      : "border-dark-200 bg-dark-50 hover:border-danger-300"
                   }`}
                 >
-                  <p className="text-2xl mb-2">💳</p>
-                  <p className="font-semibold text-gray-800">You Borrowed</p>
-                  <p className="text-xs text-gray-600">You owe friend</p>
+                  <TrendingDown className={formData.type === "borrow" ? "text-danger-600" : "text-dark-600"} size={24} />
+                  <p className="font-bold text-dark-900 text-sm">You Borrowed</p>
+                  <p className="text-xs text-dark-600">You owe friend</p>
                 </button>
               </div>
             </div>
 
             {/* Amount */}
             <div>
-              <label className="block text-sm font-semibold text-gray-700 mb-3">
-                Amount (₹) <span className="text-red-500">*</span>
+              <label className="block text-sm font-semibold text-dark-900 mb-2.5">
+                Amount (₹) <span className="text-danger-600">*</span>
               </label>
-              <input
-                type="number"
-                name="amount"
-                placeholder="100"
-                value={formData.amount}
-                onChange={handleChange}
-                step="0.01"
-                min="0"
-                required
-                className="w-full px-4 py-3 border-2 border-gray-300 rounded-lg focus:outline-none focus:border-blue-500 focus:ring-2 focus:ring-blue-200 transition-all text-base"
-              />
+              <div className="relative">
+                <span className="absolute left-3.5 top-3 text-dark-400 font-semibold text-sm">₹</span>
+                <input
+                  type="number"
+                  name="amount"
+                  placeholder="100"
+                  value={formData.amount}
+                  onChange={handleChange}
+                  step="0.01"
+                  min="0"
+                  required
+                  className="w-full pl-8 pr-4 py-2.5 border-2 border-dark-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-200 focus:border-primary-500 transition-all text-sm bg-white hover:border-dark-400"
+                />
+              </div>
             </div>
 
             {/* Description */}
-            <div>
-              <label className="block text-sm font-semibold text-gray-700 mb-3">
-                Description <span className="text-red-500">*</span>
-              </label>
-              <input
-                type="text"
-                name="description"
-                placeholder="Dinner, Movie, Groceries, etc"
-                value={formData.description}
-                onChange={handleChange}
-                required
-                className="w-full px-4 py-3 border-2 border-gray-300 rounded-lg focus:outline-none focus:border-blue-500 focus:ring-2 focus:ring-blue-200 transition-all text-base"
-              />
-            </div>
+            <Input
+              label="Description"
+              type="text"
+              name="description"
+              placeholder="Dinner, Movie, Groceries, etc"
+              value={formData.description}
+              onChange={handleChange}
+              icon={Tag}
+              required
+            />
 
             {/* Date */}
             <div>
-              <label className="block text-sm font-semibold text-gray-700 mb-3">
+              <label className="block text-sm font-semibold text-dark-900 mb-2.5">
                 Date
               </label>
-              <input
-                type="date"
-                name="datetime"
-                value={formData.datetime}
-                onChange={handleChange}
-                className="w-full px-4 py-3 border-2 border-gray-300 rounded-lg focus:outline-none focus:border-blue-500 focus:ring-2 focus:ring-blue-200 transition-all text-base"
-              />
+              <div className="relative">
+                <Calendar className="absolute left-3.5 top-3.5 text-dark-400 pointer-events-none" size={18} />
+                <input
+                  type="date"
+                  name="datetime"
+                  value={formData.datetime}
+                  onChange={handleChange}
+                  className="w-full pl-10 pr-4 py-2.5 border-2 border-dark-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-200 focus:border-primary-500 transition-all text-sm bg-white hover:border-dark-400"
+                />
+              </div>
             </div>
 
             {/* Submit Button */}
-            <button
+            <Button
               type="submit"
+              variant="primary"
+              size="lg"
               disabled={loading}
-              className="w-full bg-gradient-to-r from-blue-600 to-purple-600 text-white font-semibold py-3 rounded-lg hover:shadow-lg hover:shadow-blue-500/50 transition-all duration-200 disabled:opacity-70 disabled:cursor-not-allowed flex items-center justify-center gap-2 text-lg mt-8"
+              loading={loading}
+              className="w-full mt-8"
             >
-              {loading ? (
-                <>
-                  <svg className="w-6 h-6 animate-spin" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z" />
-                  </svg>
-                  Adding...
-                </>
-              ) : (
-                <>
-                  <span>Add Transaction</span>
-                  <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4v16m8-8H4" />
-                  </svg>
-                </>
-              )}
-            </button>
+              <Plus size={20} />
+              Add Transaction
+            </Button>
           </form>
         </Card>
       </div>

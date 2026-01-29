@@ -1,8 +1,10 @@
 import { useState } from "react";
 import { useNavigate, Link } from "react-router-dom";
-import { Mail, Lock, Eye, EyeOff } from "lucide-react";
+import { Mail, Lock, Eye, EyeOff, ArrowRight } from "lucide-react";
 import useAuth from "../hooks/useAuth";
 import Toast from "../components/Toast";
+import Button from "../components/Button";
+import Input from "../components/Input";
 
 const Login = () => {
   const navigate = useNavigate();
@@ -37,62 +39,63 @@ const Login = () => {
   };
 
   return (
-    <div className="min-h-screen bg-white flex items-center justify-center px-4">
+    <div className="min-h-screen bg-gradient-to-br from-primary-50 via-white to-secondary-50 flex items-center justify-center px-4 py-12">
       {toast && <Toast message={toast} type={toast.includes("Error") ? "error" : "success"} />}
       
       <div className="w-full max-w-md">
         {/* Header */}
         <div className="text-center mb-8">
-          <h1 className="text-3xl font-semibold text-gray-900 mb-2">Login</h1>
-          <p className="text-gray-500">Welcome back to FairShare</p>
+          <div className="mb-4 flex justify-center">
+            <div className="bg-gradient-to-r from-primary-600 to-primary-700 p-3 rounded-2xl">
+              <Mail size={32} className="text-white" />
+            </div>
+          </div>
+          <h1 className="text-3xl font-bold bg-gradient-to-r from-primary-600 to-secondary-600 bg-clip-text text-transparent mb-2">
+            Welcome Back
+          </h1>
+          <p className="text-dark-600">Sign in to FairShare and manage your expenses</p>
         </div>
 
         {/* Form Card */}
-        <div className="bg-white border border-gray-200 rounded-lg p-8 shadow-sm">
+        <div className="bg-white rounded-2xl shadow-lg-custom border border-dark-100 p-8 backdrop-blur-sm">
           {error && (
-            <div className="mb-6 bg-red-50 border border-red-200 text-red-700 px-4 py-3 rounded-lg text-sm">
+            <div className="mb-6 bg-danger-50 border border-danger-200 text-danger-700 px-4 py-3 rounded-xl text-sm font-medium flex items-center gap-2">
+              <span>⚠</span>
               {error}
             </div>
           )}
 
-          <form onSubmit={handleSubmit} className="space-y-6">
+          <form onSubmit={handleSubmit} className="space-y-5">
             {/* Email */}
-            <div>
-              <label className="block text-sm font-medium text-gray-700 mb-2">
-                Email Address
-              </label>
-              <div className="relative">
-                <Mail className="absolute left-3 top-3.5 text-gray-400" size={18} />
-                <input
-                  type="email"
-                  name="email"
-                  placeholder="you@example.com"
-                  value={formData.email}
-                  onChange={handleChange}
-                  className="w-full pl-10 pr-4 py-2.5 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent text-sm"
-                />
-              </div>
-            </div>
+            <Input
+              label="Email Address"
+              type="email"
+              name="email"
+              icon={Mail}
+              placeholder="you@example.com"
+              value={formData.email}
+              onChange={handleChange}
+            />
 
             {/* Password */}
-            <div>
-              <label className="block text-sm font-medium text-gray-700 mb-2">
+            <div className="mb-6">
+              <label className="block text-sm font-semibold text-dark-900 mb-2.5">
                 Password
               </label>
               <div className="relative">
-                <Lock className="absolute left-3 top-3.5 text-gray-400" size={18} />
+                <Lock className="absolute left-3.5 top-3.5 text-dark-400 pointer-events-none" size={18} />
                 <input
                   type={showPassword ? "text" : "password"}
                   name="password"
                   placeholder="••••••••"
                   value={formData.password}
                   onChange={handleChange}
-                  className="w-full pl-10 pr-10 py-2.5 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent text-sm"
+                  className="w-full pl-10 pr-10 py-2.5 border-2 border-dark-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-200 focus:border-primary-500 transition-all text-sm bg-white hover:border-dark-400"
                 />
                 <button
                   type="button"
                   onClick={() => setShowPassword(!showPassword)}
-                  className="absolute right-3 top-3.5 text-gray-400 hover:text-gray-600"
+                  className="absolute right-3.5 top-3.5 text-dark-400 hover:text-primary-600 transition-colors"
                 >
                   {showPassword ? <EyeOff size={18} /> : <Eye size={18} />}
                 </button>
@@ -100,34 +103,45 @@ const Login = () => {
             </div>
 
             {/* Submit Button */}
-            <button
+            <Button
               type="submit"
+              variant="primary"
+              size="lg"
               disabled={loading}
-              className="w-full bg-blue-600 hover:bg-blue-700 text-white font-medium py-2.5 rounded-lg transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+              loading={loading}
+              className="w-full"
             >
-              {loading ? "Logging in..." : "Login"}
-            </button>
+              Sign In
+              <ArrowRight size={18} />
+            </Button>
           </form>
 
           {/* Divider */}
           <div className="my-6 relative">
             <div className="absolute inset-0 flex items-center">
-              <div className="w-full border-t border-gray-200"></div>
+              <div className="w-full border-t border-dark-200"></div>
             </div>
             <div className="relative flex justify-center text-sm">
-              <span className="px-2 bg-white text-gray-500">New to FairShare?</span>
+              <span className="px-3 bg-white text-dark-500 font-medium">Don't have an account?</span>
             </div>
           </div>
 
           {/* Register Link */}
-          <Link to="/register" className="block">
-            <button
+          <Link to="/register">
+            <Button
               type="button"
-              className="w-full border border-gray-300 text-gray-700 font-medium py-2.5 rounded-lg hover:bg-gray-50 transition-colors"
+              variant="outline"
+              size="lg"
+              className="w-full"
             >
               Create Account
-            </button>
+            </Button>
           </Link>
+        </div>
+
+        {/* Footer */}
+        <div className="mt-8 text-center text-sm text-dark-600">
+          <p>By signing in, you agree to our Terms of Service and Privacy Policy</p>
         </div>
       </div>
     </div>

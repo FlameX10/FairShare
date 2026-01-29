@@ -27,17 +27,17 @@ const Sidebar = () => {
       {/* Sidebar */}
       <div
         className={`${
-          isOpen ? "w-64" : "w-20"
-        } bg-gradient-to-b from-primary-700 to-primary-900 text-white transition-all duration-300 flex flex-col shadow-xl border-r border-primary-600`}
+          isOpen ? "lg:w-64 w-full" : "lg:w-20 w-full"
+        } bg-primary-700 text-white transition-all duration-300 flex flex-row lg:flex-col shadow-xl border-b lg:border-b-0 lg:border-r border-primary-600`}
       >
         {/* Logo Section */}
-        <div className="p-6 flex items-center justify-between border-b border-primary-600">
+        <div className="p-4 lg:p-6 flex items-center justify-between border-b border-primary-600">
           {isOpen && (
             <div>
-              <h1 className="text-2xl font-bold bg-gradient-to-r from-white to-primary-100 bg-clip-text text-transparent">
+              <h1 className="text-xl lg:text-2xl font-bold text-white">
                 FairShare
               </h1>
-              <p className="text-xs text-primary-200">Smart Expense Sharing</p>
+              <p className="hidden lg:block text-xs text-primary-200">Smart Expense Sharing</p>
             </div>
           )}
           <button
@@ -105,7 +105,7 @@ const Sidebar = () => {
           )}
           <button
             onClick={logout}
-            className="w-full bg-gradient-to-r from-danger-500 to-danger-600 hover:from-danger-600 hover:to-danger-700 text-white font-semibold py-2.5 rounded-lg transition-all duration-200 flex items-center justify-center gap-2 shadow-md hover:shadow-lg"
+            className="w-full bg-danger-600 hover:bg-danger-700 text-white font-semibold py-2.5 rounded-lg transition-all duration-200 flex items-center justify-center gap-2 shadow-md hover:shadow-lg"
           >
             <LogOut size={20} />
             {isOpen && "Logout"}

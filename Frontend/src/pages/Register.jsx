@@ -5,6 +5,7 @@ import { Mail, Lock, User, Eye, EyeOff, CheckCircle2, ArrowRight } from "lucide-
 import Toast from "../components/Toast";
 import Button from "../components/Button";
 import Input from "../components/Input";
+import Card from "../components/Card";
 
 const Register = () => {
   const navigate = useNavigate();
@@ -78,25 +79,25 @@ const Register = () => {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-primary-50 via-white to-secondary-50 flex items-center justify-center px-4 py-12">
+    <div className="min-h-screen bg-dark-50 flex items-center justify-center px-4 py-12">
       {toast && <Toast message={toast} type={toast.includes("✅") ? "success" : "error"} />}
       
       <div className="w-full max-w-md">
         {/* Header */}
         <div className="text-center mb-8">
           <div className="mb-4 flex justify-center">
-            <div className="bg-gradient-to-r from-secondary-600 to-secondary-700 p-3 rounded-2xl">
+            <div className="bg-secondary-600 p-3 rounded-2xl">
               <User size={32} className="text-white" />
             </div>
           </div>
-          <h1 className="text-3xl font-bold bg-gradient-to-r from-primary-600 to-secondary-600 bg-clip-text text-transparent mb-2">
+          <h1 className="text-3xl font-bold text-primary-600 mb-2">
             Get Started
           </h1>
           <p className="text-dark-600">Create your FairShare account in seconds</p>
         </div>
 
         {/* Form Card */}
-        <div className="bg-white rounded-2xl shadow-lg-custom border border-dark-100 p-8 backdrop-blur-sm">
+        <Card variant="elevated">
           {error && (
             <div className="mb-6 bg-danger-50 border border-danger-200 text-danger-700 px-4 py-3 rounded-xl text-sm font-medium flex items-center gap-2">
               <span>⚠</span>
@@ -191,7 +192,7 @@ const Register = () => {
               Sign In
             </Button>
           </Link>
-        </div>
+        </Card>
 
         {/* Footer */}
         <div className="mt-8 text-center text-sm text-dark-600">

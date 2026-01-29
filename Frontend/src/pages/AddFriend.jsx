@@ -39,17 +39,17 @@ const AddFriend = () => {
   };
 
   return (
-    <div className="p-8 bg-gradient-to-br from-dark-50 via-white to-secondary-50 min-h-screen">
+    <div className="p-4 sm:p-6 lg:p-8 bg-dark-50 min-h-screen">
       {toast && <Toast message={toast} type={toast.includes("Error") ? "error" : "success"} />}
       <div className="max-w-lg mx-auto">
         {/* Header */}
         <div className="text-center mb-8">
           <div className="mb-4 flex justify-center">
-            <div className="bg-gradient-to-r from-secondary-600 to-secondary-700 p-3 rounded-2xl">
+            <div className="bg-secondary-600 p-3 rounded-2xl">
               <User size={32} className="text-white" />
             </div>
           </div>
-          <h1 className="text-3xl font-bold bg-gradient-to-r from-primary-600 to-secondary-600 bg-clip-text text-transparent mb-2">
+          <h1 className="text-3xl font-bold text-primary-600 mb-2">
             Add Friend
           </h1>
           <p className="text-dark-600">Create a profile to start sharing expenses</p>

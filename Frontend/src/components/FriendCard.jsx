@@ -10,7 +10,7 @@ const FriendCard = ({ name, upiId, email, balance = 0 }) => {
       <div className="flex justify-between items-start">
         <div className="flex-1">
           <div className="flex items-center gap-2 mb-2">
-            <div className="w-10 h-10 rounded-full bg-gradient-to-br from-primary-400 to-secondary-400 flex items-center justify-center">
+            <div className="w-10 h-10 rounded-full bg-primary-600 flex items-center justify-center">
               <User size={18} className="text-white" />
             </div>
             <div>

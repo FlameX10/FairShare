@@ -80,14 +80,14 @@ const AddExpense = () => {
   const selectedFriendName = friends.find(f => f._id === formData.friendId)?.name;
 
   return (
-    <div className="p-8 bg-gradient-to-br from-dark-50 via-white to-primary-50 min-h-screen">
+    <div className="p-4 sm:p-6 lg:p-8 bg-dark-50 min-h-screen">
       <div className="max-w-2xl mx-auto">
         {toast && <Toast message={toast} type={toast.includes("Error") ? "error" : "success"} />}
 
         {/* Header */}
         <div className="mb-8">
-          <h1 className="text-4xl font-bold bg-gradient-to-r from-primary-600 to-secondary-600 bg-clip-text text-transparent mb-2 flex items-center gap-3">
-            <Wallet size={36} />
+          <h1 className="text-3xl sm:text-4xl font-bold text-primary-600 mb-2 flex items-center gap-3">
+            <Wallet size={32} />
             Add Transaction
           </h1>
           {selectedFriendName && (

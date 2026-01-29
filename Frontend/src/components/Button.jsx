@@ -9,10 +9,10 @@ const Button = ({
   ...props
 }) => {
   const variants = {
-    primary: "bg-gradient-to-r from-primary-600 to-primary-700 text-white hover:from-primary-700 hover:to-primary-800 shadow-md hover:shadow-lg active:shadow-sm",
+    primary: "bg-primary-600 text-white hover:bg-primary-700 shadow-md hover:shadow-lg active:shadow-sm",
     secondary: "bg-dark-100 text-dark-900 hover:bg-dark-200 border border-dark-300 shadow-sm hover:shadow-md",
-    danger: "bg-gradient-to-r from-danger-500 to-danger-600 text-white hover:from-danger-600 hover:to-danger-700 shadow-md hover:shadow-lg",
-    success: "bg-gradient-to-r from-success-500 to-success-600 text-white hover:from-success-600 hover:to-success-700 shadow-md hover:shadow-lg",
+    danger: "bg-danger-500 text-white hover:bg-danger-600 shadow-md hover:shadow-lg",
+    success: "bg-success-500 text-white hover:bg-success-600 shadow-md hover:shadow-lg",
     ghost: "text-primary-600 hover:bg-primary-50 active:bg-primary-100",
     outline: "border-2 border-primary-600 text-primary-600 hover:bg-primary-50",
   };
